@@ -30,6 +30,10 @@ namespace ElmanGameDevTools.PlayerSystem
         public float slopeAcceleration = 18f;
         public float uphillSlowdown = 8f;
 
+        [Header("EXTERNAL IMPULSES")]
+        public float maxExternalHorizontalSpeed = 35f;
+        public float groundedImpulseLiftThreshold = 0.5f;
+
         [Header("BUNNY HOP SETTINGS")]
         public float bunnyHopWindow = 0.12f;
         [Range(0f, 1f)] public float airControl = 0.45f;
@@ -137,6 +141,37 @@ namespace ElmanGameDevTools.PlayerSystem
         public float CurrentHorizontalSpeed { get; private set; }
         public MovementState CurrentState => _currentMovementState;
 
+        public void AddExternalImpulse(Vector3 impulse)
+        {
+            Vector3 horizontalImpulse = Vector3.ProjectOnPlane(impulse, Vector3.up);
+
+            if (_isSliding)
+            {
+                _slideVelocity += horizontalImpulse;
+                _slideVelocity = ClampHorizontalSpeed(_slideVelocity);
+            }
+            else
+            {
+                _horizontalVelocity += horizontalImpulse;
+                _horizontalVelocity = ClampHorizontalSpeed(_horizontalVelocity);
+            }
+
+            if (impulse.y > 0f)
+            {
+                _velocity.y = Mathf.Max(_velocity.y, impulse.y);
+
+                if (impulse.y >= groundedImpulseLiftThreshold)
+                {
+                    _isGrounded = false;
+                    _timeSinceLanded = 999f;
+                }
+            }
+            else
+            {
+                _velocity.y += impulse.y;
+            }
+        }
+
         private void OnEnable()
         {
             InputSystem.settings.updateMode = InputSettings.UpdateMode.ProcessEventsInDynamicUpdate;
@@ -219,7 +254,7 @@ namespace ElmanGameDevTools.PlayerSystem
 
         private void UpdateMovementState()
         {
-            bool wantsToRun = _sprintPressed && _moveInput.y > 0.1f;
+            bool wantsToRun = _sprintPressed && _moveInput.sqrMagnitude > 0.01f;
 
             if (!_isGrounded)
             {
@@ -255,7 +290,7 @@ namespace ElmanGameDevTools.PlayerSystem
 
             if (_jumpPressedThisFrame && _isGrounded && !_isCrouching)
             {
-                RedirectJumpVelocityToLookDirection();
+                ApplyJumpTakeoffDirection(moveInput);
                 _velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
                 _isGrounded = false;
                 _timeSinceLanded = 999f;
@@ -346,17 +381,25 @@ namespace ElmanGameDevTools.PlayerSystem
                 _horizontalVelocity = _horizontalVelocity.normalized * maxAirSpeed;
         }
 
-        private void RedirectJumpVelocityToLookDirection()
+        private void ApplyJumpTakeoffDirection(Vector3 moveInput)
         {
             float speed = _horizontalVelocity.magnitude;
+            Vector3 takeoffDirection = moveInput;
+
+            if (takeoffDirection.sqrMagnitude < 0.001f)
+            {
+                takeoffDirection = _horizontalVelocity;
+            }
+
+            if (takeoffDirection.sqrMagnitude < 0.001f)
+                return;
+
             if (speed < jumpRedirectMinSpeed)
-                return;
+            {
+                speed = _currentMovementSpeed;
+            }
 
-            Vector3 lookDirection = Vector3.ProjectOnPlane(transform.forward, Vector3.up);
-            if (lookDirection.sqrMagnitude < 0.001f)
-                return;
-
-            _horizontalVelocity = lookDirection.normalized * speed;
+            _horizontalVelocity = takeoffDirection.normalized * speed;
         }
 
         private void ApplyMissedBunnyHopSpeedLoss()
@@ -366,6 +409,14 @@ namespace ElmanGameDevTools.PlayerSystem
 
             Vector3 cappedVelocity = _horizontalVelocity.normalized * _currentMovementSpeed;
             _horizontalVelocity = Vector3.MoveTowards(_horizontalVelocity, cappedVelocity, missedBunnyHopDeceleration * Time.deltaTime);
+        }
+
+        private Vector3 ClampHorizontalSpeed(Vector3 horizontalVelocity)
+        {
+            if (horizontalVelocity.magnitude <= maxExternalHorizontalSpeed)
+                return horizontalVelocity;
+
+            return horizontalVelocity.normalized * maxExternalHorizontalSpeed;
         }
 
         private void HandleCrouchLogic()
