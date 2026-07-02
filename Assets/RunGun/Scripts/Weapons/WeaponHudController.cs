@@ -46,10 +46,19 @@ namespace RunGun.Weapons
         [SerializeField] private List<WeaponSlotView> slots = new();
         [SerializeField] private Component ammoTextComponent;
         [SerializeField] private Image ammoIcon;
+        [SerializeField] private GameObject reloadCircleRoot;
+        [SerializeField] private Image reloadCircle;
+        [SerializeField] private bool hideReloadCircleWhenIdle = true;
         [SerializeField, Range(0, 255)] private int selectedBackgroundAlpha = 150;
         [SerializeField, Range(0, 255)] private int selectedIconAlpha = 255;
 
-        private readonly Dictionary<WeaponType, WeaponSlotView> _slotByType = new();
+        private PropertyInfo _ammoTextProperty;
+        private PlayerWeaponController.WeaponDefinition _lastAmmoWeapon;
+        private int _lastAmmo = -1;
+        private int _lastMagazineSize = -1;
+        private string _lastAmmoText;
+        private bool _lastReloadVisible;
+        private float _lastReloadFill = -1f;
 
         private void Awake()
         {
@@ -60,10 +69,26 @@ namespace RunGun.Weapons
 
             AutoBindMissingReferences();
             CacheSlots();
+            ConfigureReloadCircle();
+        }
+
+        private void Update()
+        {
+            UpdateAmmoText(weaponController != null ? weaponController.CurrentWeapon : null);
+            UpdateReloadCircle();
         }
 
         private void OnEnable()
         {
+            if (weaponController == null)
+            {
+                weaponController = GetComponent<PlayerWeaponController>();
+            }
+
+            AutoBindMissingReferences();
+            CacheSlots();
+            ConfigureReloadCircle();
+
             if (weaponController == null)
             {
                 return;
@@ -91,8 +116,9 @@ namespace RunGun.Weapons
 
         public void Bind(PlayerWeaponController controller)
         {
-            if (weaponController == controller)
+            if (weaponController == controller && controller != null)
             {
+                Refresh(controller.CurrentWeapon);
                 return;
             }
 
@@ -141,6 +167,7 @@ namespace RunGun.Weapons
             }
 
             UpdateAmmoText(selectedWeapon);
+            UpdateReloadCircle();
         }
 
         private void ApplySlotState(WeaponSlotView slot, bool selected)
@@ -174,10 +201,23 @@ namespace RunGun.Weapons
         {
             if (weapon == null)
             {
+                _lastAmmoWeapon = null;
+                _lastAmmo = -1;
+                _lastMagazineSize = -1;
                 SetText(string.Empty);
                 return;
             }
 
+            if (_lastAmmoWeapon == weapon
+                && _lastAmmo == weapon.ammoInMagazine
+                && _lastMagazineSize == weapon.magazineSize)
+            {
+                return;
+            }
+
+            _lastAmmoWeapon = weapon;
+            _lastAmmo = weapon.ammoInMagazine;
+            _lastMagazineSize = weapon.magazineSize;
             SetText($"{weapon.ammoInMagazine}/{weapon.magazineSize}");
         }
 
@@ -188,19 +228,26 @@ namespace RunGun.Weapons
                 return;
             }
 
-            if (ammoTextComponent is Text uiText)
+            if (_lastAmmoText == value)
             {
-                uiText.text = value;
                 return;
             }
 
-            var textProperty = ammoTextComponent.GetType().GetProperty(
-                "text",
-                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-
-            if (textProperty != null && textProperty.PropertyType == typeof(string) && textProperty.CanWrite)
+            if (ammoTextComponent is Text uiText)
             {
-                textProperty.SetValue(ammoTextComponent, value);
+                uiText.text = value;
+                _lastAmmoText = value;
+                return;
+            }
+
+            _ammoTextProperty ??= ammoTextComponent.GetType().GetProperty(
+                    "text",
+                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+            if (_ammoTextProperty != null && _ammoTextProperty.PropertyType == typeof(string) && _ammoTextProperty.CanWrite)
+            {
+                _ammoTextProperty.SetValue(ammoTextComponent, value);
+                _lastAmmoText = value;
             }
         }
 
@@ -208,11 +255,7 @@ namespace RunGun.Weapons
         {
             if (gunsPanel == null)
             {
-                var panelObject = GameObject.Find("GunsPanel");
-                if (panelObject != null)
-                {
-                    gunsPanel = panelObject.transform;
-                }
+                gunsPanel = FindChildRecursive(transform, "GunsPanel") ?? GameObject.Find("GunsPanel")?.transform;
             }
 
             if (slots == null || slots.Count == 0)
@@ -238,20 +281,116 @@ namespace RunGun.Weapons
 
             if (ammoTextComponent == null)
             {
-                var ammoTextObject = GameObject.Find("AmmoText");
+                var ammoTextObject = FindChildRecursive(transform, "AmmoText")?.gameObject ?? GameObject.Find("AmmoText");
                 if (ammoTextObject != null)
                 {
                     ammoTextComponent = GetTextComponent(ammoTextObject);
+                    _ammoTextProperty = null;
+                    _lastAmmoText = null;
+                }
+            }
+            else if (!CanWriteText(ammoTextComponent))
+            {
+                var textComponent = GetTextComponent(ammoTextComponent.gameObject);
+                if (textComponent != null)
+                {
+                    ammoTextComponent = textComponent;
+                    _ammoTextProperty = null;
+                    _lastAmmoText = null;
                 }
             }
 
             if (ammoIcon == null)
             {
-                var ammoIconObject = GameObject.Find("AmmoIcon");
+                var ammoIconObject = FindChildRecursive(transform, "AmmoIcon")?.gameObject ?? GameObject.Find("AmmoIcon");
                 if (ammoIconObject != null)
                 {
                     ammoIcon = ammoIconObject.GetComponent<Image>();
                 }
+            }
+
+            if (reloadCircle == null)
+            {
+                BindReloadCircle();
+            }
+        }
+
+        private void BindReloadCircle()
+        {
+            Transform reloadRootTransform = reloadCircleRoot != null
+                ? reloadCircleRoot.transform
+                : FindChildRecursive(transform, "ReloadCircle");
+
+            if (reloadRootTransform == null)
+            {
+                reloadCircle = FindSceneImageByName("ReloadCircle");
+                reloadRootTransform = reloadCircle != null ? reloadCircle.transform : null;
+            }
+
+            if (reloadRootTransform == null)
+            {
+                return;
+            }
+
+            reloadCircleRoot = reloadRootTransform.gameObject;
+            if (reloadCircle == null)
+            {
+                reloadCircle = GetReloadFillImage(reloadCircleRoot);
+            }
+        }
+
+        private void ConfigureReloadCircle()
+        {
+            if (reloadCircle == null)
+            {
+                return;
+            }
+
+            if (reloadCircleRoot == null)
+            {
+                reloadCircleRoot = reloadCircle.gameObject;
+            }
+
+            reloadCircle.type = Image.Type.Filled;
+            reloadCircle.fillMethod = Image.FillMethod.Radial360;
+            reloadCircle.fillAmount = 0f;
+
+            if (hideReloadCircleWhenIdle)
+            {
+                reloadCircleRoot.SetActive(false);
+            }
+        }
+
+        private void UpdateReloadCircle()
+        {
+            if (reloadCircle == null || reloadCircleRoot == null)
+            {
+                BindReloadCircle();
+                ConfigureReloadCircle();
+            }
+
+            if (reloadCircle == null || weaponController == null)
+            {
+                return;
+            }
+
+            bool reloading = weaponController.IsReloading;
+            if (hideReloadCircleWhenIdle && reloadCircleRoot != null && _lastReloadVisible != reloading)
+            {
+                reloadCircleRoot.SetActive(reloading);
+                _lastReloadVisible = reloading;
+            }
+
+            float fillAmount = reloading ? weaponController.ReloadProgress : 0f;
+            if (!Mathf.Approximately(_lastReloadFill, fillAmount))
+            {
+                reloadCircle.fillAmount = fillAmount;
+                _lastReloadFill = fillAmount;
+            }
+
+            if (!hideReloadCircleWhenIdle)
+            {
+                reloadCircle.enabled = reloading;
             }
         }
 
@@ -303,8 +442,6 @@ namespace RunGun.Weapons
 
         private void CacheSlots()
         {
-            _slotByType.Clear();
-
             for (var i = 0; i < slots.Count; i++)
             {
                 var slot = slots[i];
@@ -314,7 +451,6 @@ namespace RunGun.Weapons
                 }
 
                 slot.CacheDefaults();
-                _slotByType[slot.type] = slot;
             }
         }
 
@@ -346,6 +482,82 @@ namespace RunGun.Weapons
             }
 
             return null;
+        }
+
+        private static bool CanWriteText(Component component)
+        {
+            if (component == null)
+            {
+                return false;
+            }
+
+            if (component is Text)
+            {
+                return true;
+            }
+
+            var textProperty = component.GetType().GetProperty(
+                "text",
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+            return textProperty != null && textProperty.PropertyType == typeof(string) && textProperty.CanWrite;
+        }
+
+        private static Image FindSceneImageByName(string objectName)
+        {
+            var images = Resources.FindObjectsOfTypeAll<Image>();
+            for (var i = 0; i < images.Length; i++)
+            {
+                var image = images[i];
+                if (image == null || !image.gameObject.scene.IsValid())
+                {
+                    continue;
+                }
+
+                if (image.name.Equals(objectName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return image;
+                }
+            }
+
+            return null;
+        }
+
+        private static Image GetReloadFillImage(GameObject reloadRoot)
+        {
+            if (reloadRoot == null)
+            {
+                return null;
+            }
+
+            var rootImage = reloadRoot.GetComponent<Image>();
+            if (rootImage != null)
+            {
+                return rootImage;
+            }
+
+            var childImages = reloadRoot.GetComponentsInChildren<Image>(true);
+            for (var i = 0; i < childImages.Length; i++)
+            {
+                var imageName = childImages[i].name;
+                if (imageName.Equals("ReloadCircle", StringComparison.OrdinalIgnoreCase)
+                    || imageName.Equals("ReloadFill", StringComparison.OrdinalIgnoreCase)
+                    || imageName.Equals("Fill", StringComparison.OrdinalIgnoreCase)
+                    || imageName.Equals("Progress", StringComparison.OrdinalIgnoreCase))
+                {
+                    return childImages[i];
+                }
+            }
+
+            for (var i = 0; i < childImages.Length; i++)
+            {
+                if (!childImages[i].name.Contains("Background", StringComparison.OrdinalIgnoreCase))
+                {
+                    return childImages[i];
+                }
+            }
+
+            return childImages.Length > 0 ? childImages[0] : null;
         }
 
         private static Transform FindChildRecursive(Transform root, string childName)

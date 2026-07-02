@@ -130,6 +130,8 @@ namespace ElmanGameDevTools.PlayerSystem
         private bool _hasLastMousePosition;
         private string _debugText;
         private GUIStyle _debugStyle;
+        private Camera _playerCameraComponent;
+        private readonly Collider[] _standUpHits = new Collider[16];
         private MovementState _currentMovementState = MovementState.Walking;
 
         public enum MovementState { Walking, Running, Crouching, Sliding, Jumping }
@@ -197,6 +199,7 @@ namespace ElmanGameDevTools.PlayerSystem
             _originalHeight = controller.height;
             _targetHeight = _originalHeight;
             _cameraBaseHeight = playerCamera.localPosition.y;
+            _playerCameraComponent = playerCamera.GetComponent<Camera>();
 
             _targetYaw = transform.eulerAngles.y;
             _targetPitch = playerCamera.localEulerAngles.x;
@@ -590,10 +593,9 @@ namespace ElmanGameDevTools.PlayerSystem
 
         private void HandleFovChange()
         {
-            if (!enableRunFov || playerCamera.GetComponent<Camera>() == null) return;
-            bool isActuallyRunning = _sprintPressed && _moveInput.y > 0.1f;
-            Camera cam = playerCamera.GetComponent<Camera>();
-            cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, isActuallyRunning ? runFov : normalFov, Time.deltaTime * fovChangeSpeed);
+            if (!enableRunFov || _playerCameraComponent == null) return;
+            bool isActuallyRunning = _sprintPressed && _moveInput.sqrMagnitude > 0.01f;
+            _playerCameraComponent.fieldOfView = Mathf.Lerp(_playerCameraComponent.fieldOfView, isActuallyRunning ? runFov : normalFov, Time.deltaTime * fovChangeSpeed);
         }
 
         private void HandleHeadBob()
@@ -792,9 +794,10 @@ namespace ElmanGameDevTools.PlayerSystem
         public bool CanStandUp()
         {
             if (standingHeightMarker == null) return true;
-            Collider[] hits = Physics.OverlapSphere(standingHeightMarker.transform.position, standingCheckRadius, obstacleLayerMask);
-            foreach (Collider col in hits)
+            int hitCount = Physics.OverlapSphereNonAlloc(standingHeightMarker.transform.position, standingCheckRadius, _standUpHits, obstacleLayerMask);
+            for (var i = 0; i < hitCount; i++)
             {
+                Collider col = _standUpHits[i];
                 if (col.transform.IsChildOf(transform) || col.transform == transform || col.isTrigger) continue;
                 if (col.bounds.min.y < standingHeightMarker.transform.position.y + minStandingClearance) return false;
             }
