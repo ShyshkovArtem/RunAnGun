@@ -25,6 +25,9 @@ namespace RunGun.Weapons
             public float fireInterval = 0.25f;
             public int impactPower = 1;
             public GameObject viewModel;
+            public Transform muzzleTransform;
+            public GameObject muzzleFlashPrefab;
+            public GameObject impactEffectPrefab;
             public AudioClip shotClip;
             [Range(0f, 1f)] public float shotVolume = 1f;
             [Range(0.1f, 3f)] public float shotPitch = 1f;
@@ -33,19 +36,39 @@ namespace RunGun.Weapons
             [Range(0.1f, 3f)] public float reloadPitch = 1f;
         }
 
+        [Header("Weapons")]
         [SerializeField] private List<WeaponDefinition> weapons = new();
         [SerializeField] private int startWeaponIndex;
+
+        [Header("References")]
         [SerializeField] private Transform gunPlace;
         [SerializeField] private Transform aimCamera;
         [SerializeField] private PlayerController movementController;
         [SerializeField] private AudioSource shotAudioSource;
         [SerializeField] private AudioSource reloadAudioSource;
+
+        [Header("Auto Binding")]
         [SerializeField] private bool autoBindAudioClips = true;
+        [SerializeField] private bool autoBindWarFxPrefabs = true;
+        [SerializeField] private bool useMuzzlePointChildEffects = true;
+
+        [Header("Effects")]
+        [SerializeField] private float muzzleFlashLifetime = 1f;
+        [SerializeField] private float impactEffectLifetime = 4f;
+        [SerializeField] private float pistolImpactEffectScale = 0.45f;
+        [SerializeField] private float rifleImpactEffectScale = 0.35f;
+        [SerializeField] private float shotgunImpactEffectScale = 0.32f;
+        [SerializeField] private int shotgunImpactEffectCount = 8;
+        [SerializeField] private float shotgunImpactEffectSpread = 0.24f;
+
+        [Header("View Alignment")]
         [SerializeField] private bool alignGunPlaceToCamera = true;
         [SerializeField] private bool followCameraPosition = true;
         [SerializeField] private Vector3 gunPlaceCameraOffset = new(0.25f, -0.25f, 0.45f);
         [SerializeField] private LayerMask impactMask = ~0;
         [SerializeField] private float rayOriginForwardOffset = 0.25f;
+
+        [Header("Movement Impulses")]
         [SerializeField] private float pistolImpulse = 3.75f;
         [SerializeField] private float rifleImpulse = 1.2f;
         [SerializeField] private float shotgunImpulse = 18f;
@@ -55,8 +78,12 @@ namespace RunGun.Weapons
         [SerializeField] private float bazookaMissImpulse = 8f;
         [SerializeField] private float bazookaImpactDistance = 80f;
         [SerializeField] private float bazookaRadius = 6f;
+
+        [Header("Debug")]
         [SerializeField] private bool logWeaponFire;
         [SerializeField] private bool logWeaponImpulses;
+
+        [Header("Impact Marks")]
         [SerializeField] private bool spawnBulletHoles = true;
         [SerializeField] private int maxTemporaryImpactMarks = 80;
         [SerializeField] private float bulletHoleLifetime = 6f;
@@ -71,6 +98,8 @@ namespace RunGun.Weapons
         [SerializeField] private Sprite bazookaExplosionDecal;
         [SerializeField] private int bazookaScorchMarks = 8;
         [SerializeField] private float bazookaScorchSpread = 0.55f;
+
+        [Header("View Model Animation")]
         [SerializeField] private Vector3 switchPositionOffset = new(0f, -0.25f, 0.08f);
         [SerializeField] private float switchDuration = 0.18f;
         [SerializeField] private Vector3 shotPositionOffset = new(0f, -0.02f, -0.12f);
@@ -171,8 +200,10 @@ namespace RunGun.Weapons
 
             EnsureAudioSources();
             AutoBindAudioClips();
+            AutoBindWarFxPrefabs();
             AutoBindDecals();
             AutoBindViewModels();
+            SetMuzzlePointTemplatesActive(false);
             CacheGunPlaceCameraTransformOffset();
         }
 
@@ -266,6 +297,8 @@ namespace RunGun.Weapons
 
             GetAimRay(out Vector3 rayOrigin, out Vector3 aimDirection);
             bool hasHit = TryRaycastWeapon(weapon.type, rayOrigin, aimDirection, out RaycastHit hit);
+            SpawnMuzzleFlash(weapon, aimDirection);
+            SpawnImpactEffect(weapon, hasHit, hit);
             SpawnBulletHole(weapon, hasHit, hit);
             ApplyMovementImpact(weapon, rayOrigin, aimDirection, hasHit, hit);
 
@@ -434,6 +467,40 @@ namespace RunGun.Weapons
 #endif
         }
 
+        private void AutoBindWarFxPrefabs()
+        {
+            if (!autoBindWarFxPrefabs)
+            {
+                return;
+            }
+
+#if UNITY_EDITOR
+            var defaultMuzzle = AssetDatabase.LoadAssetAtPath<GameObject>(
+                "Assets/JMO Assets/WarFX/_Effects/MuzzleFlashes/FPS/WFX_MF FPS RIFLE1.prefab");
+            var defaultImpact = AssetDatabase.LoadAssetAtPath<GameObject>(
+                "Assets/JMO Assets/WarFX/_Effects/Bullet Impacts/+ Bullet Hole/Unlit/WFX_BImpact Concrete + Hole Unlit.prefab");
+
+            for (var i = 0; i < weapons.Count; i++)
+            {
+                var weapon = weapons[i];
+                if (weapon == null)
+                {
+                    continue;
+                }
+
+                if (weapon.muzzleFlashPrefab == null)
+                {
+                    weapon.muzzleFlashPrefab = defaultMuzzle;
+                }
+
+                if (weapon.impactEffectPrefab == null)
+                {
+                    weapon.impactEffectPrefab = defaultImpact;
+                }
+            }
+#endif
+        }
+
         private void ReadWeaponSelectionInput()
         {
             var keyboard = Keyboard.current;
@@ -507,6 +574,11 @@ namespace RunGun.Weapons
                 return;
             }
 
+            if (weapon.type != WeaponType.Bazooka && weapon.impactEffectPrefab != null)
+            {
+                return;
+            }
+
             if (weapon.type == WeaponType.Shotgun)
             {
                 SpawnShotgunPelletHoles(hit);
@@ -520,6 +592,114 @@ namespace RunGun.Weapons
             }
 
             CreateBulletHole(hit, GetBulletHoleSize(weapon.type), $"BulletHole_{weapon.type}");
+        }
+
+        private void SpawnMuzzleFlash(WeaponDefinition weapon, Vector3 aimDirection)
+        {
+            if (weapon == null)
+            {
+                return;
+            }
+
+            Transform muzzleTransform = weapon.muzzleTransform;
+            if (useMuzzlePointChildEffects && TrySpawnMuzzlePointChildEffects(muzzleTransform))
+            {
+                return;
+            }
+
+            if (weapon.muzzleFlashPrefab == null)
+            {
+                return;
+            }
+
+            Vector3 position;
+            Quaternion rotation;
+            Transform parent = null;
+
+            if (muzzleTransform != null)
+            {
+                position = muzzleTransform.position;
+                rotation = muzzleTransform.rotation;
+                parent = muzzleTransform;
+            }
+            else
+            {
+                position = weapon.viewModel != null
+                    ? weapon.viewModel.transform.position + aimDirection * 0.45f
+                    : rayOriginFallback(aimDirection);
+                rotation = Quaternion.LookRotation(aimDirection);
+            }
+
+            var muzzleFlash = Instantiate(weapon.muzzleFlashPrefab, position, rotation, parent);
+            Destroy(muzzleFlash, Mathf.Max(0.05f, muzzleFlashLifetime));
+
+            Vector3 rayOriginFallback(Vector3 direction)
+            {
+                GetAimRay(out Vector3 origin, out _);
+                return origin + direction * 0.65f;
+            }
+        }
+
+        private void SpawnImpactEffect(WeaponDefinition weapon, bool hasHit, RaycastHit hit)
+        {
+            if (weapon?.impactEffectPrefab == null || !hasHit)
+            {
+                return;
+            }
+
+            if (weapon.type == WeaponType.Bazooka)
+            {
+                return;
+            }
+
+            if (weapon.type == WeaponType.Shotgun)
+            {
+                SpawnShotgunImpactEffects(weapon.impactEffectPrefab, hit);
+                return;
+            }
+
+            SpawnImpactEffectInstance(
+                weapon.impactEffectPrefab,
+                hit,
+                GetImpactEffectScale(weapon.type),
+                $"ImpactEffect_{weapon.type}");
+        }
+
+        private void SpawnShotgunImpactEffects(GameObject impactPrefab, RaycastHit hit)
+        {
+            var surfaceRotation = Quaternion.LookRotation(hit.normal);
+            int effectCount = Mathf.Max(1, shotgunImpactEffectCount);
+
+            for (var i = 0; i < effectCount; i++)
+            {
+                Vector2 pelletOffset = UnityEngine.Random.insideUnitCircle * shotgunImpactEffectSpread;
+                Vector3 worldOffset = surfaceRotation * new Vector3(pelletOffset.x, pelletOffset.y, 0f);
+                float scale = shotgunImpactEffectScale * UnityEngine.Random.Range(0.8f, 1.2f);
+                SpawnImpactEffectInstance(impactPrefab, hit, scale, "ImpactEffect_ShotgunPellet", worldOffset);
+            }
+        }
+
+        private void SpawnImpactEffectInstance(GameObject impactPrefab, RaycastHit hit, float scale, string objectName, Vector3 worldOffset = default)
+        {
+            Quaternion rotation = Quaternion.LookRotation(hit.normal) * Quaternion.Euler(0f, 0f, UnityEngine.Random.Range(0f, 360f));
+            Vector3 position = hit.point + worldOffset + hit.normal * bulletHoleSurfaceOffset;
+            var impactEffect = Instantiate(impactPrefab, position, rotation);
+            impactEffect.name = objectName;
+            impactEffect.transform.localScale *= Mathf.Max(0.01f, scale);
+            impactEffect.transform.SetParent(hit.collider.transform, true);
+            Destroy(impactEffect, Mathf.Max(0.1f, impactEffectLifetime));
+            RegisterImpactMark(impactEffect);
+        }
+
+        private float GetImpactEffectScale(WeaponType weaponType)
+        {
+            return weaponType switch
+            {
+                WeaponType.Pistol => pistolImpactEffectScale,
+                WeaponType.Rifle => rifleImpactEffectScale,
+                WeaponType.Shotgun => shotgunImpactEffectScale,
+                _ => 1f
+            };
         }
 
         private float GetBulletHoleRange(WeaponType weaponType)
@@ -868,6 +1048,11 @@ namespace RunGun.Weapons
                     }
                 }
 
+                if (weapon.muzzleTransform == null && weapon.viewModel != null)
+                {
+                    weapon.muzzleTransform = FindChildRecursive(weapon.viewModel.transform, "MuzzlePoint");
+                }
+
                 CacheViewModelPose(weapon.viewModel);
             }
 
@@ -978,6 +1163,80 @@ namespace RunGun.Weapons
             }
 
             return null;
+        }
+
+        private bool TrySpawnMuzzlePointChildEffects(Transform muzzleTransform)
+        {
+            if (muzzleTransform == null || muzzleTransform.childCount == 0)
+            {
+                return false;
+            }
+
+            int templateCount = muzzleTransform.childCount;
+            for (var i = 0; i < templateCount; i++)
+            {
+                var template = muzzleTransform.GetChild(i);
+                if (template == null || IsRuntimeMuzzleEffect(template))
+                {
+                    continue;
+                }
+
+                var effect = Instantiate(template.gameObject, muzzleTransform);
+                effect.name = $"{template.name}_Shot";
+                effect.transform.localPosition = template.localPosition;
+                effect.transform.localRotation = template.localRotation;
+                effect.transform.localScale = template.localScale;
+                effect.SetActive(true);
+
+                PlayParticleSystems(effect);
+                Destroy(effect, Mathf.Max(0.05f, muzzleFlashLifetime));
+                return true;
+            }
+
+            return false;
+        }
+
+        private void SetMuzzlePointTemplatesActive(bool active)
+        {
+            if (weapons == null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < weapons.Count; i++)
+            {
+                var muzzleTransform = weapons[i]?.muzzleTransform;
+                if (muzzleTransform == null)
+                {
+                    continue;
+                }
+
+                for (var childIndex = 0; childIndex < muzzleTransform.childCount; childIndex++)
+                {
+                    var child = muzzleTransform.GetChild(childIndex);
+                    if (child != null && !IsRuntimeMuzzleEffect(child))
+                    {
+                        child.gameObject.SetActive(active);
+                    }
+                }
+            }
+        }
+
+        private static bool IsRuntimeMuzzleEffect(Transform effect)
+        {
+            return effect != null && effect.name.EndsWith("_Shot", StringComparison.Ordinal);
+        }
+
+        private static void PlayParticleSystems(GameObject effect)
+        {
+            var particleSystems = effect.GetComponentsInChildren<ParticleSystem>(true);
+            for (var i = 0; i < particleSystems.Length; i++)
+            {
+                var particleSystem = particleSystems[i];
+                particleSystem.gameObject.SetActive(true);
+                particleSystem.Clear(true);
+                particleSystem.Play(true);
+            }
         }
 
         private void CreateDefaultWeapons()
