@@ -54,7 +54,9 @@ public sealed class PlayerWeaponControllerEditor : Editor
         "bazookaImpulse",
         "bazookaMissImpulse",
         "bazookaImpactDistance",
-        "bazookaRadius"
+        "bazookaRadius",
+        "bazookaRocketSpeed",
+        "bazookaRocketMaxFlightTime"
     };
 
     private static readonly string[] ImpactMarks =
@@ -82,7 +84,9 @@ public sealed class PlayerWeaponControllerEditor : Editor
         "shotPositionOffset",
         "shotRotationOffset",
         "shotKick",
-        "shotReturnSpeed"
+        "shotReturnSpeed",
+        "reloadAnimationTransitionDuration",
+        "reloadAnimationControlsViewPose"
     };
 
     private static readonly string[] DebugOptions =
@@ -184,6 +188,10 @@ public sealed class WeaponDefinitionDrawer : PropertyDrawer
     private static readonly string[] ViewAndEffects =
     {
         "viewModel",
+        "viewModelAnimator",
+        "reloadAnimatorController",
+        "reloadAnimationState",
+        "rocketVisual",
         "muzzleTransform",
         "muzzleFlashPrefab",
         "impactEffectPrefab"

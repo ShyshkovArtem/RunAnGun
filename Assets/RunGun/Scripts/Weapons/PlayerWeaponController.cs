@@ -25,6 +25,10 @@ namespace RunGun.Weapons
             public float fireInterval = 0.25f;
             public int impactPower = 1;
             public GameObject viewModel;
+            public Animator viewModelAnimator;
+            public RuntimeAnimatorController reloadAnimatorController;
+            public string reloadAnimationState;
+            public Transform rocketVisual;
             public Transform muzzleTransform;
             public GameObject muzzleFlashPrefab;
             public GameObject impactEffectPrefab;
@@ -78,6 +82,8 @@ namespace RunGun.Weapons
         [SerializeField] private float bazookaMissImpulse = 8f;
         [SerializeField] private float bazookaImpactDistance = 80f;
         [SerializeField] private float bazookaRadius = 6f;
+        [SerializeField] private float bazookaRocketSpeed = 45f;
+        [SerializeField] private float bazookaRocketMaxFlightTime = 2f;
 
         [Header("Debug")]
         [SerializeField] private bool logWeaponFire;
@@ -106,6 +112,8 @@ namespace RunGun.Weapons
         [SerializeField] private Vector3 shotRotationOffset = new(-7f, 0f, 0f);
         [SerializeField] private float shotKick = 1f;
         [SerializeField] private float shotReturnSpeed = 18f;
+        [SerializeField] private float reloadAnimationTransitionDuration = 0.05f;
+        [SerializeField] private bool reloadAnimationControlsViewPose = true;
 
         public event Action<WeaponDefinition> WeaponChanged;
         public event Action<WeaponDefinition> AmmoChanged;
@@ -145,6 +153,8 @@ namespace RunGun.Weapons
         private Quaternion _gunPlaceCameraRotationOffset = Quaternion.identity;
         private bool _hasCachedGunPlaceOffset;
         private Transform _cachedFallbackCamera;
+        private Coroutine _bazookaRocketFlight;
+        private readonly Dictionary<Transform, RocketVisualPose> _rocketVisualPoses = new();
         private static Mesh _bulletHoleMesh;
         private static Material _bulletHoleMaterial;
 
@@ -153,6 +163,14 @@ namespace RunGun.Weapons
             public Transform transform;
             public Vector3 basePosition;
             public Quaternion baseRotation;
+        }
+
+        private sealed class RocketVisualPose
+        {
+            public Transform parent;
+            public Vector3 localPosition;
+            public Quaternion localRotation;
+            public Vector3 localScale;
         }
 
         private void Reset()
@@ -201,6 +219,7 @@ namespace RunGun.Weapons
             EnsureAudioSources();
             AutoBindAudioClips();
             AutoBindWarFxPrefabs();
+            AutoBindReloadAnimationControllers();
             AutoBindDecals();
             AutoBindViewModels();
             SetMuzzlePointTemplatesActive(false);
@@ -224,6 +243,11 @@ namespace RunGun.Weapons
         {
             AlignGunPlaceToCamera();
             AnimateCurrentViewModel();
+        }
+
+        private void OnDisable()
+        {
+            StopReloadAnimation(CurrentWeapon);
         }
 
         public void SelectWeapon(WeaponType type)
@@ -254,6 +278,12 @@ namespace RunGun.Weapons
             if (!force && _selectedIndex == index)
             {
                 return;
+            }
+
+            var previousWeapon = CurrentWeapon;
+            if (_isReloading)
+            {
+                StopReloadAnimation(previousWeapon);
             }
 
             _selectedIndex = index;
@@ -298,17 +328,30 @@ namespace RunGun.Weapons
             GetAimRay(out Vector3 rayOrigin, out Vector3 aimDirection);
             bool hasHit = TryRaycastWeapon(weapon.type, rayOrigin, aimDirection, out RaycastHit hit);
             SpawnMuzzleFlash(weapon, aimDirection);
+
+            if (weapon.type == WeaponType.Bazooka)
+            {
+                LaunchBazookaRocket(weapon, rayOrigin, aimDirection, hasHit, hit);
+                CompleteShot(weapon, false);
+                return;
+            }
+
             SpawnImpactEffect(weapon, hasHit, hit);
             SpawnBulletHole(weapon, hasHit, hit);
             ApplyMovementImpact(weapon, rayOrigin, aimDirection, hasHit, hit);
 
+            CompleteShot(weapon, true);
+        }
+
+        private void CompleteShot(WeaponDefinition weapon, bool autoReloadWhenEmpty)
+        {
             AmmoChanged?.Invoke(weapon);
             if (logWeaponFire)
             {
                 Debug.Log($"Fired {weapon.displayName}. Ammo: {weapon.ammoInMagazine}/{weapon.magazineSize}");
             }
 
-            if (weapon.ammoInMagazine <= 0)
+            if (autoReloadWhenEmpty && weapon.ammoInMagazine <= 0)
             {
                 TryReload();
             }
@@ -348,6 +391,7 @@ namespace RunGun.Weapons
                 if (weapon.ammoInMagazine >= weapon.magazineSize)
                 {
                     CancelReload();
+                    SetRocketLoadedVisible(weapon);
                     return;
                 }
 
@@ -357,6 +401,7 @@ namespace RunGun.Weapons
 
             weapon.ammoInMagazine = weapon.magazineSize;
             CancelReload();
+            SetRocketLoadedVisible(weapon);
             AmmoChanged?.Invoke(weapon);
         }
 
@@ -364,10 +409,12 @@ namespace RunGun.Weapons
         {
             _reloadCompleteTime = Time.time + Mathf.Max(0.01f, weapon.reloadTime);
             PlayReloadSound(weapon);
+            PlayReloadAnimation(weapon);
         }
 
         private void CancelReload()
         {
+            StopReloadAnimation(CurrentWeapon);
             _isReloading = false;
             _reloadCompleteTime = 0f;
 
@@ -427,6 +474,83 @@ namespace RunGun.Weapons
             reloadAudioSource.volume = weapon.reloadVolume;
             reloadAudioSource.pitch = weapon.reloadPitch;
             reloadAudioSource.Play();
+        }
+
+        private void PlayReloadAnimation(WeaponDefinition weapon)
+        {
+            if (weapon == null || weapon.reloadAnimatorController == null || string.IsNullOrWhiteSpace(weapon.reloadAnimationState))
+            {
+                return;
+            }
+
+            var animator = EnsureWeaponAnimator(weapon);
+            if (animator == null)
+            {
+                return;
+            }
+
+            if (animator.runtimeAnimatorController != weapon.reloadAnimatorController)
+            {
+                animator.runtimeAnimatorController = weapon.reloadAnimatorController;
+            }
+
+            animator.enabled = true;
+            animator.speed = GetReloadAnimationSpeed(weapon);
+            float transitionDuration = Mathf.Max(0f, reloadAnimationTransitionDuration);
+            if (transitionDuration > 0f)
+            {
+                animator.CrossFadeInFixedTime(weapon.reloadAnimationState, transitionDuration, 0, 0f);
+            }
+            else
+            {
+                animator.Play(weapon.reloadAnimationState, 0, 0f);
+            }
+        }
+
+        private void StopReloadAnimation(WeaponDefinition weapon)
+        {
+            var animator = weapon?.viewModelAnimator;
+            if (animator == null)
+            {
+                return;
+            }
+
+            animator.speed = 1f;
+            if (animator.gameObject.activeInHierarchy)
+            {
+                animator.Rebind();
+                animator.Update(0f);
+            }
+
+            animator.enabled = false;
+
+            if (weapon.viewModel != null)
+            {
+                ResetViewModelPose(weapon.viewModel);
+            }
+        }
+
+        private float GetReloadAnimationSpeed(WeaponDefinition weapon)
+        {
+            float reloadDuration = Mathf.Max(0.01f, weapon.reloadTime);
+            var clips = weapon.reloadAnimatorController != null ? weapon.reloadAnimatorController.animationClips : null;
+            if (clips == null || clips.Length == 0)
+            {
+                return 1f;
+            }
+
+            AnimationClip clip = null;
+            for (var i = 0; i < clips.Length; i++)
+            {
+                if (clips[i] != null && clips[i].name.Equals(weapon.reloadAnimationState, StringComparison.OrdinalIgnoreCase))
+                {
+                    clip = clips[i];
+                    break;
+                }
+            }
+
+            clip ??= clips[0];
+            return clip != null ? Mathf.Max(0.01f, clip.length / reloadDuration) : 1f;
         }
 
         private void AutoBindAudioClips()
@@ -501,18 +625,93 @@ namespace RunGun.Weapons
 #endif
         }
 
+        private void AutoBindReloadAnimationControllers()
+        {
+#if UNITY_EDITOR
+            var pistolReloadController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(
+                "Assets/RunGun/Animation/M1911.controller");
+#else
+            RuntimeAnimatorController pistolReloadController = null;
+#endif
+
+            for (var i = 0; i < weapons.Count; i++)
+            {
+                var weapon = weapons[i];
+                if (weapon == null)
+                {
+                    continue;
+                }
+
+                if (weapon.type != WeaponType.Pistol)
+                {
+                    continue;
+                }
+
+                if (weapon.reloadAnimatorController == null)
+                {
+                    weapon.reloadAnimatorController = pistolReloadController;
+                }
+
+                if (string.IsNullOrWhiteSpace(weapon.reloadAnimationState))
+                {
+                    weapon.reloadAnimationState = "PistolReload";
+                }
+            }
+        }
+
         private void ReadWeaponSelectionInput()
         {
             var keyboard = Keyboard.current;
-            if (keyboard == null)
+            if (keyboard != null)
+            {
+                if (WasPressed(keyboard.digit1Key, keyboard.numpad1Key)) SelectWeapon(0, false);
+                if (WasPressed(keyboard.digit2Key, keyboard.numpad2Key)) SelectWeapon(1, false);
+                if (WasPressed(keyboard.digit3Key, keyboard.numpad3Key)) SelectWeapon(2, false);
+                if (WasPressed(keyboard.digit4Key, keyboard.numpad4Key)) SelectWeapon(3, false);
+            }
+
+            var mouse = Mouse.current;
+            if (mouse == null)
             {
                 return;
             }
 
-            if (WasPressed(keyboard.digit1Key, keyboard.numpad1Key)) SelectWeapon(0, false);
-            if (WasPressed(keyboard.digit2Key, keyboard.numpad2Key)) SelectWeapon(1, false);
-            if (WasPressed(keyboard.digit3Key, keyboard.numpad3Key)) SelectWeapon(2, false);
-            if (WasPressed(keyboard.digit4Key, keyboard.numpad4Key)) SelectWeapon(3, false);
+            float scrollY = mouse.scroll.ReadValue().y;
+            if (scrollY > 0.01f)
+            {
+                CycleWeapon(-1);
+            }
+            else if (scrollY < -0.01f)
+            {
+                CycleWeapon(1);
+            }
+        }
+
+        private void CycleWeapon(int direction)
+        {
+            if (weapons == null || weapons.Count <= 1)
+            {
+                return;
+            }
+
+            int step = direction >= 0 ? 1 : -1;
+            int startIndex = IsValidIndex(_selectedIndex) ? _selectedIndex : 0;
+
+            for (var i = 1; i <= weapons.Count; i++)
+            {
+                int nextIndex = (startIndex + (i * step)) % weapons.Count;
+                if (nextIndex < 0)
+                {
+                    nextIndex += weapons.Count;
+                }
+
+                var weapon = weapons[nextIndex];
+                if (weapon != null && weapon.unlocked)
+                {
+                    SelectWeapon(nextIndex, false);
+                    return;
+                }
+            }
         }
 
         private void ReadFireInput()
@@ -700,6 +899,157 @@ namespace RunGun.Weapons
                 WeaponType.Shotgun => shotgunImpactEffectScale,
                 _ => 1f
             };
+        }
+
+        private void LaunchBazookaRocket(WeaponDefinition weapon, Vector3 rayOrigin, Vector3 aimDirection, bool hasHit, RaycastHit hit)
+        {
+            var rocketVisual = EnsureRocketVisual(weapon);
+            if (rocketVisual == null)
+            {
+                SpawnImpactEffect(weapon, hasHit, hit);
+                SpawnBulletHole(weapon, hasHit, hit);
+                ApplyMovementImpact(weapon, rayOrigin, aimDirection, hasHit, hit);
+                if (CurrentWeapon == weapon && weapon.ammoInMagazine <= 0)
+                {
+                    TryReload();
+                }
+
+                return;
+            }
+
+            if (_bazookaRocketFlight != null)
+            {
+                StopCoroutine(_bazookaRocketFlight);
+                _bazookaRocketFlight = null;
+                RestoreRocketVisual(rocketVisual, false);
+            }
+
+            Vector3 targetPosition = hasHit
+                ? hit.point
+                : rayOrigin + aimDirection * GetBulletHoleRange(WeaponType.Bazooka);
+
+            _bazookaRocketFlight = StartCoroutine(FlyBazookaRocket(weapon, rocketVisual, targetPosition, rayOrigin, aimDirection, hasHit, hit));
+        }
+
+        private System.Collections.IEnumerator FlyBazookaRocket(
+            WeaponDefinition weapon,
+            Transform rocketVisual,
+            Vector3 targetPosition,
+            Vector3 rayOrigin,
+            Vector3 aimDirection,
+            bool hasHit,
+            RaycastHit hit)
+        {
+            CacheRocketVisualPose(rocketVisual);
+
+            Vector3 startPosition = rocketVisual.position;
+            rocketVisual.SetParent(null, true);
+            rocketVisual.position = startPosition;
+            rocketVisual.rotation = Quaternion.LookRotation(aimDirection, Vector3.up);
+            rocketVisual.gameObject.SetActive(true);
+
+            float distance = Vector3.Distance(startPosition, targetPosition);
+            float duration = distance / Mathf.Max(0.01f, bazookaRocketSpeed);
+            duration = Mathf.Min(duration, Mathf.Max(0.01f, bazookaRocketMaxFlightTime));
+            float elapsed = 0f;
+
+            while (elapsed < duration)
+            {
+                if (rocketVisual == null)
+                {
+                    yield break;
+                }
+
+                float t = duration <= 0f ? 1f : elapsed / duration;
+                rocketVisual.position = Vector3.Lerp(startPosition, targetPosition, t);
+                Vector3 flightDirection = targetPosition - rocketVisual.position;
+                if (flightDirection.sqrMagnitude > 0.0001f)
+                {
+                    rocketVisual.rotation = Quaternion.LookRotation(flightDirection.normalized, Vector3.up);
+                }
+
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+
+            if (rocketVisual != null)
+            {
+                rocketVisual.position = targetPosition;
+                RestoreRocketVisual(rocketVisual, false);
+            }
+
+            SpawnImpactEffect(weapon, hasHit, hit);
+            SpawnBulletHole(weapon, hasHit, hit);
+            ApplyMovementImpact(weapon, rayOrigin, aimDirection, hasHit, hit);
+            _bazookaRocketFlight = null;
+
+            if (CurrentWeapon == weapon && weapon.ammoInMagazine <= 0)
+            {
+                TryReload();
+            }
+        }
+
+        private Transform EnsureRocketVisual(WeaponDefinition weapon)
+        {
+            if (weapon == null || weapon.type != WeaponType.Bazooka)
+            {
+                return null;
+            }
+
+            if (weapon.rocketVisual == null && weapon.viewModel != null)
+            {
+                weapon.rocketVisual = FindChildRecursive(weapon.viewModel.transform, "Rocket");
+            }
+
+            if (weapon.rocketVisual != null)
+            {
+                CacheRocketVisualPose(weapon.rocketVisual);
+            }
+
+            return weapon.rocketVisual;
+        }
+
+        private void CacheRocketVisualPose(Transform rocketVisual)
+        {
+            if (rocketVisual == null || _rocketVisualPoses.ContainsKey(rocketVisual))
+            {
+                return;
+            }
+
+            _rocketVisualPoses.Add(rocketVisual, new RocketVisualPose
+            {
+                parent = rocketVisual.parent,
+                localPosition = rocketVisual.localPosition,
+                localRotation = rocketVisual.localRotation,
+                localScale = rocketVisual.localScale
+            });
+        }
+
+        private void RestoreRocketVisual(Transform rocketVisual, bool active)
+        {
+            if (rocketVisual == null)
+            {
+                return;
+            }
+
+            if (_rocketVisualPoses.TryGetValue(rocketVisual, out var pose))
+            {
+                rocketVisual.SetParent(pose.parent, false);
+                rocketVisual.localPosition = pose.localPosition;
+                rocketVisual.localRotation = pose.localRotation;
+                rocketVisual.localScale = pose.localScale;
+            }
+
+            rocketVisual.gameObject.SetActive(active);
+        }
+
+        private void SetRocketLoadedVisible(WeaponDefinition weapon)
+        {
+            var rocketVisual = EnsureRocketVisual(weapon);
+            if (rocketVisual != null)
+            {
+                RestoreRocketVisual(rocketVisual, true);
+            }
         }
 
         private float GetBulletHoleRange(WeaponType weaponType)
@@ -966,6 +1316,12 @@ namespace RunGun.Weapons
                 return;
             }
 
+            if (reloadAnimationControlsViewPose && _isReloading && HasReloadAnimation(weapon))
+            {
+                _shotBlend = Mathf.MoveTowards(_shotBlend, 0f, shotReturnSpeed * Time.deltaTime);
+                return;
+            }
+
             if (_switchTimer > 0f)
             {
                 _switchTimer = Mathf.Max(0f, _switchTimer - Time.deltaTime);
@@ -1053,10 +1409,47 @@ namespace RunGun.Weapons
                     weapon.muzzleTransform = FindChildRecursive(weapon.viewModel.transform, "MuzzlePoint");
                 }
 
+                if (weapon.type == WeaponType.Bazooka && weapon.rocketVisual == null && weapon.viewModel != null)
+                {
+                    weapon.rocketVisual = FindChildRecursive(weapon.viewModel.transform, "Rocket");
+                }
+
+                EnsureRocketVisual(weapon);
                 CacheViewModelPose(weapon.viewModel);
             }
 
             SetViewModelsActive();
+        }
+
+        private Animator EnsureWeaponAnimator(WeaponDefinition weapon)
+        {
+            if (weapon == null || weapon.viewModel == null)
+            {
+                return null;
+            }
+
+            if (weapon.viewModelAnimator == null)
+            {
+                weapon.viewModelAnimator = weapon.viewModel.GetComponent<Animator>();
+            }
+
+            if (weapon.viewModelAnimator == null)
+            {
+                weapon.viewModelAnimator = weapon.viewModel.AddComponent<Animator>();
+            }
+
+            if (weapon.reloadAnimatorController != null && weapon.viewModelAnimator.runtimeAnimatorController != weapon.reloadAnimatorController)
+            {
+                weapon.viewModelAnimator.runtimeAnimatorController = weapon.reloadAnimatorController;
+            }
+
+            weapon.viewModelAnimator.enabled = false;
+            return weapon.viewModelAnimator;
+        }
+
+        private static bool HasReloadAnimation(WeaponDefinition weapon)
+        {
+            return weapon?.reloadAnimatorController != null && !string.IsNullOrWhiteSpace(weapon.reloadAnimationState);
         }
 
         private void CacheGunPlaceCameraTransformOffset()
