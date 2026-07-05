@@ -56,7 +56,11 @@ public sealed class PlayerWeaponControllerEditor : Editor
         "bazookaImpactDistance",
         "bazookaRadius",
         "bazookaRocketSpeed",
-        "bazookaRocketMaxFlightTime"
+        "bazookaRocketMaxFlightTime",
+        "pistolAirRedirectStrength",
+        "rifleAirRedirectStrength",
+        "shotgunAirRedirectStrength",
+        "bazookaAirRedirectStrength"
     };
 
     private static readonly string[] ImpactMarks =

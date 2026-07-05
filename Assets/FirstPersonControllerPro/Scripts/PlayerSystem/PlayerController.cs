@@ -24,21 +24,22 @@ namespace ElmanGameDevTools.PlayerSystem
         public float jumpHeight = 1.2f;
         public float gravity = -25f;
         public float sensitivity = 0.08f;
-        public float groundAcceleration = 14f;
-        public float groundDeceleration = 22f;
-        public float airAcceleration = 12f;
-        public float slopeAcceleration = 18f;
-        public float uphillSlowdown = 8f;
+        public float groundAcceleration = 28f;
+        public float groundDeceleration = 34f;
+        public float airAcceleration = 18f;
+        public float slopeAcceleration = 30f;
+        public float uphillSlowdown = 12f;
+        public float maxSlopeRunSpeed = 18f;
 
         [Header("EXTERNAL IMPULSES")]
-        public float maxExternalHorizontalSpeed = 35f;
+        public float maxExternalHorizontalSpeed = 42f;
         public float groundedImpulseLiftThreshold = 0.5f;
 
         [Header("BUNNY HOP SETTINGS")]
         public float bunnyHopWindow = 0.12f;
-        [Range(0f, 1f)] public float airControl = 0.45f;
-        public float airStrafeAcceleration = 8f;
-        public float maxAirSpeed = 16f;
+        [Range(0f, 1f)] public float airControl = 0.75f;
+        public float airStrafeAcceleration = 14f;
+        public float maxAirSpeed = 28f;
         public float missedBunnyHopDeceleration = 18f;
         public float jumpRedirectMinSpeed = 6f;
 
@@ -79,12 +80,14 @@ namespace ElmanGameDevTools.PlayerSystem
         public float crouchSmoothTime = 0.1f;
 
         [Header("SLIDE SETTINGS")]
-        public float slideMinStartSpeed = 6.5f;
-        public float slideStartSpeed = 11.5f;
-        public float slideFriction = 3.5f;
+        public float slideMinStartSpeed = 6f;
+        public float slideStartSpeed = 12.5f;
+        public float slideStartBoost = 2.5f;
+        public float slideFriction = 2f;
         public float uphillSlideFriction = 9f;
-        [Range(0f, 1f)] public float slideSteering = 0.35f;
-        public float downhillAcceleration = 22f;
+        [Range(0f, 12f)] public float slideSteering = 4.5f;
+        public float downhillAcceleration = 38f;
+        public float maxSlideSpeed = 30f;
         public float minSlideSpeed = 5f;
         public float downhillSlideStartAngle = 5f;
 
@@ -143,9 +146,21 @@ namespace ElmanGameDevTools.PlayerSystem
         public float CurrentHorizontalSpeed { get; private set; }
         public MovementState CurrentState => _currentMovementState;
 
-        public void AddExternalImpulse(Vector3 impulse)
+        public void AddExternalImpulse(Vector3 impulse, float airRedirectStrength = 0f)
         {
             Vector3 horizontalImpulse = Vector3.ProjectOnPlane(impulse, Vector3.up);
+            bool applyAirRedirect = !_isGrounded
+                && !_isSliding
+                && airRedirectStrength > 0f
+                && horizontalImpulse.sqrMagnitude > 0.001f
+                && _horizontalVelocity.sqrMagnitude > 0.001f;
+
+            if (applyAirRedirect)
+            {
+                float currentSpeed = _horizontalVelocity.magnitude;
+                Vector3 redirectedVelocity = horizontalImpulse.normalized * currentSpeed;
+                _horizontalVelocity = Vector3.Slerp(_horizontalVelocity, redirectedVelocity, Mathf.Clamp01(airRedirectStrength));
+            }
 
             if (_isSliding)
             {
@@ -172,6 +187,53 @@ namespace ElmanGameDevTools.PlayerSystem
             {
                 _velocity.y += impulse.y;
             }
+        }
+
+        public void TeleportTo(Vector3 position, Quaternion rotation)
+        {
+            if (controller == null)
+                controller = GetComponent<CharacterController>();
+
+            bool wasEnabled = controller != null && controller.enabled;
+            if (wasEnabled)
+                controller.enabled = false;
+
+            transform.SetPositionAndRotation(position, Quaternion.Euler(0f, rotation.eulerAngles.y, 0f));
+
+            if (playerCamera != null)
+                playerCamera.localRotation = Quaternion.identity;
+
+            _velocity = Vector3.zero;
+            _horizontalVelocity = Vector3.zero;
+            _slideVelocity = Vector3.zero;
+            _isSliding = false;
+            _isCrouching = false;
+            _isGrounded = false;
+            _timeSinceLanded = 999f;
+            CurrentHorizontalSpeed = 0f;
+            _currentMovementState = MovementState.Walking;
+
+            _targetYaw = transform.eulerAngles.y;
+            _currentYaw = _targetYaw;
+            _targetPitch = 0f;
+            _currentPitch = 0f;
+            _currentTilt = 0f;
+
+            if (_originalHeight > 0f)
+            {
+                _targetHeight = _originalHeight;
+                if (controller != null)
+                    controller.height = _originalHeight;
+
+                if (playerCamera != null)
+                    playerCamera.localPosition = new Vector3(0f, _cameraBaseHeight, 0f);
+            }
+
+            if (standingHeightMarker != null)
+                standingHeightMarker.transform.position = new Vector3(transform.position.x, transform.position.y + _markerHeightOffset, transform.position.z);
+
+            if (wasEnabled)
+                controller.enabled = true;
         }
 
         private void OnEnable()
@@ -350,35 +412,38 @@ namespace ElmanGameDevTools.PlayerSystem
             {
                 float downhillAlignment = Vector3.Dot(_horizontalVelocity.normalized, downhillDirection);
                 if (downhillAlignment > 0f)
+                {
                     _horizontalVelocity += downhillDirection * (slopeAcceleration * slopeAngle01 * downhillAlignment * Time.deltaTime);
+                    _horizontalVelocity = ClampHorizontalSpeed(_horizontalVelocity, maxSlopeRunSpeed);
+                }
                 else
+                {
                     _horizontalVelocity = Vector3.MoveTowards(_horizontalVelocity, Vector3.zero, uphillSlowdown * slopeAngle01 * Time.deltaTime);
+                }
             }
             else if (_moveInput.sqrMagnitude > 0.001f)
             {
                 Vector3 inputDirection = (transform.right * _moveInput.x + transform.forward * _moveInput.y).normalized;
                 float inputDownhillAlignment = Vector3.Dot(inputDirection, downhillDirection);
                 if (inputDownhillAlignment > 0f)
+                {
                     _horizontalVelocity += downhillDirection * (slopeAcceleration * slopeAngle01 * inputDownhillAlignment * Time.deltaTime);
+                    _horizontalVelocity = ClampHorizontalSpeed(_horizontalVelocity, maxSlopeRunSpeed);
+                }
             }
         }
 
         private void ApplyAirMovement(Vector3 moveInput)
         {
-            Vector3 strafeInput = transform.right * _moveInput.x;
-            if (strafeInput.sqrMagnitude < 0.001f)
+            if (moveInput.sqrMagnitude < 0.001f)
                 return;
 
-            Vector3 strafeDirection = strafeInput.normalized;
-            _horizontalVelocity += strafeDirection * (airStrafeAcceleration * Time.deltaTime);
-
-            float speed = _horizontalVelocity.magnitude;
-            if (speed > 0.001f)
-            {
-                Vector3 lookPlanar = Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
-                Vector3 lookAlignedVelocity = lookPlanar * speed;
-                _horizontalVelocity = Vector3.Lerp(_horizontalVelocity, lookAlignedVelocity, airControl * Time.deltaTime);
-            }
+            Vector3 inputDirection = moveInput.normalized;
+            float currentSpeed = _horizontalVelocity.magnitude;
+            float desiredSpeed = Mathf.Max(_currentMovementSpeed, Mathf.Min(currentSpeed, maxAirSpeed));
+            Vector3 desiredVelocity = inputDirection * desiredSpeed;
+            float controlAcceleration = Mathf.Max(airAcceleration, airStrafeAcceleration) * Mathf.Clamp01(airControl);
+            _horizontalVelocity = Vector3.MoveTowards(_horizontalVelocity, desiredVelocity, controlAcceleration * Time.deltaTime);
 
             if (_horizontalVelocity.magnitude > maxAirSpeed)
                 _horizontalVelocity = _horizontalVelocity.normalized * maxAirSpeed;
@@ -416,10 +481,15 @@ namespace ElmanGameDevTools.PlayerSystem
 
         private Vector3 ClampHorizontalSpeed(Vector3 horizontalVelocity)
         {
-            if (horizontalVelocity.magnitude <= maxExternalHorizontalSpeed)
+            return ClampHorizontalSpeed(horizontalVelocity, maxExternalHorizontalSpeed);
+        }
+
+        private static Vector3 ClampHorizontalSpeed(Vector3 horizontalVelocity, float maxSpeed)
+        {
+            if (horizontalVelocity.magnitude <= maxSpeed)
                 return horizontalVelocity;
 
-            return horizontalVelocity.normalized * maxExternalHorizontalSpeed;
+            return horizontalVelocity.normalized * maxSpeed;
         }
 
         private void HandleCrouchLogic()
@@ -450,7 +520,7 @@ namespace ElmanGameDevTools.PlayerSystem
             if (!hasEnoughSpeed && !hasDownhillStart)
                 return false;
 
-            return _moveInput.y > 0.25f;
+            return _moveInput.sqrMagnitude > 0.01f || horizontalVelocity.magnitude >= slideMinStartSpeed;
         }
 
         private void StartSlide()
@@ -460,7 +530,8 @@ namespace ElmanGameDevTools.PlayerSystem
                 ? horizontalVelocity.normalized
                 : transform.forward;
 
-            _slideVelocity = slideDirection * slideStartSpeed;
+            float startSpeed = Mathf.Max(slideStartSpeed, horizontalVelocity.magnitude + slideStartBoost);
+            _slideVelocity = slideDirection * Mathf.Min(startSpeed, maxSlideSpeed);
             _horizontalVelocity = Vector3.zero;
             _isSliding = true;
         }
@@ -512,14 +583,17 @@ namespace ElmanGameDevTools.PlayerSystem
                 downhillDirection.Normalize();
                 float downhillAlignment = Vector3.Dot(_slideVelocity.normalized, downhillDirection);
                 if (downhillAlignment > 0f)
+                {
                     _slideVelocity += downhillDirection * (downhillAcceleration * downhillAlignment * Time.deltaTime);
+                    _slideVelocity = ClampHorizontalSpeed(_slideVelocity, maxSlideSpeed);
+                }
             }
 
             if (steeringInput.sqrMagnitude > 0.001f)
             {
                 Vector3 targetDirection = Vector3.ProjectOnPlane(steeringInput, _groundNormal).normalized;
                 Vector3 targetVelocity = targetDirection * _slideVelocity.magnitude;
-                _slideVelocity = Vector3.Lerp(_slideVelocity, targetVelocity, slideSteering * Time.deltaTime);
+                _slideVelocity = Vector3.MoveTowards(_slideVelocity, targetVelocity, slideSteering * _slideVelocity.magnitude * Time.deltaTime);
             }
 
             _slideVelocity = Vector3.ProjectOnPlane(_slideVelocity, _groundNormal);

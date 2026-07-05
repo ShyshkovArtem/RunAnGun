@@ -84,6 +84,10 @@ namespace RunGun.Weapons
         [SerializeField] private float bazookaRadius = 6f;
         [SerializeField] private float bazookaRocketSpeed = 45f;
         [SerializeField] private float bazookaRocketMaxFlightTime = 2f;
+        [SerializeField, Range(0f, 1f)] private float pistolAirRedirectStrength = 0.08f;
+        [SerializeField, Range(0f, 1f)] private float rifleAirRedirectStrength = 0.12f;
+        [SerializeField, Range(0f, 1f)] private float shotgunAirRedirectStrength = 0.65f;
+        [SerializeField, Range(0f, 1f)] private float bazookaAirRedirectStrength = 0.85f;
 
         [Header("Debug")]
         [SerializeField] private bool logWeaponFire;
@@ -753,7 +757,7 @@ namespace RunGun.Weapons
                 return;
             }
 
-            movementController.AddExternalImpulse(impulse);
+            movementController.AddExternalImpulse(impulse, GetAirRedirectStrength(weapon.type));
 
             if (logWeaponImpulses)
             {
@@ -1270,6 +1274,18 @@ namespace RunGun.Weapons
             }
 
             return -aimDirection * shotgunMissImpulse;
+        }
+
+        private float GetAirRedirectStrength(WeaponType weaponType)
+        {
+            return weaponType switch
+            {
+                WeaponType.Pistol => pistolAirRedirectStrength,
+                WeaponType.Rifle => rifleAirRedirectStrength,
+                WeaponType.Shotgun => shotgunAirRedirectStrength,
+                WeaponType.Bazooka => bazookaAirRedirectStrength,
+                _ => 0f
+            };
         }
 
         private Vector3 CalculateBazookaImpulse(Vector3 aimDirection, bool hasHit, RaycastHit hit)
