@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3162617772513961031
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6699368435008866460}
+  - component: {fileID: 8682036534847533934}
+  m_Layer: 0
+  m_Name: DialogueStartFinal
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6699368435008866460
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3162617772513961031}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3, y: 0, z: 99.91}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8682036534847533934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3162617772513961031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88bbc6c4a481489ca9df493de6627778, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RunGun.Levels.TutorialDialogueController
+  lines:
+  - speakerName: Blue Man
+    text: Good job! Now is the final part.
+    speakerPosePrefab: {fileID: 2736272047063480907, guid: a6dce48185b1cf24fb9f542767adc9c2, type: 3}
+  - speakerName: Blue Man
+    text: There are 3 platforms you need to overcome to get to the finish.
+    speakerPosePrefab: {fileID: 2736272047063480907, guid: ca5a1075237da5545b10438e8106affd, type: 3}
+  - speakerName: Blue Man
+    text: On the next level I will teach you how to use pistol. See you there!
+    speakerPosePrefab: {fileID: 2736272047063480907, guid: 9804a0ccb68c4404f9d2f5dce9c70874, type: 3}
+  playOnStart: 0
+  hidePoseOnEnd: 1
+  useTypewriter: 1
+  charactersPerSecond: 45
+  enterCompletesCurrentLine: 1
+  dialogueRoot: {fileID: 0}
+  speakerNameText: {fileID: 0}
+  dialogueText: {fileID: 0}
+  poseSpawnAnchor: {fileID: 0}
+  parentPoseToAnchor: 1
+  poseLocalPosition: {x: 0, y: 0, z: 0}
+  poseLocalRotation: {x: 0, y: 0, z: 0}
+  poseLocalScale: {x: 1, y: 1, z: 1}
+  autoFindPlayer: 1
+  playerController: {fileID: 0}
+  weaponController: {fileID: 0}

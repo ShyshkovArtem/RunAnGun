@@ -12,15 +12,23 @@ namespace RunGun.Levels
         [SerializeField] private bool useSpawnerRotation = true;
         [SerializeField] private string playerTag = "Player";
         [SerializeField] private string playerBodyName = "Player_Object";
+        [SerializeField] private bool treatSpawnerAsGroundPoint = true;
+        [SerializeField] private float groundSpawnClearance = 0.05f;
         [SerializeField] private bool respawnWhenFalling = true;
         [SerializeField] private float fallY = -20f;
 
         private Transform _fallCheckTarget;
+        private Transform _activeRespawnPoint;
+        private bool _activeRespawnUsesSpawnerRotation;
 
         public GameObject SpawnedPlayer { get; private set; }
 
+        public Transform ActiveRespawnPoint => _activeRespawnPoint != null ? _activeRespawnPoint : transform;
+
         private void Awake()
         {
+            _activeRespawnPoint = transform;
+            _activeRespawnUsesSpawnerRotation = useSpawnerRotation;
             SpawnOrMovePlayer();
         }
 
@@ -54,7 +62,9 @@ namespace RunGun.Levels
             var playerController = SpawnedPlayer.GetComponentInChildren<PlayerController>(true);
             if (playerController != null)
             {
-                playerController.TeleportTo(transform.position, useSpawnerRotation ? transform.rotation : SpawnedPlayer.transform.rotation);
+                playerController.TeleportTo(
+                    GetSpawnPosition(playerController),
+                    GetSpawnRotation(playerController.transform.rotation));
                 return;
             }
 
@@ -80,6 +90,7 @@ namespace RunGun.Levels
             Quaternion rotation = useSpawnerRotation ? transform.rotation : playerPrefab.transform.rotation;
             SpawnedPlayer = Instantiate(playerPrefab, transform.position, rotation);
             CacheFallCheckTarget();
+            PlacePlayer(SpawnedPlayer);
         }
 
         private bool TryFindExistingPlayer(out GameObject player)
@@ -115,7 +126,9 @@ namespace RunGun.Levels
             var playerController = player.GetComponentInChildren<PlayerController>(true);
             if (playerController != null)
             {
-                playerController.TeleportTo(transform.position, useSpawnerRotation ? transform.rotation : playerController.transform.rotation);
+                playerController.TeleportTo(
+                    GetSpawnPosition(playerController),
+                    GetSpawnRotation(playerController.transform.rotation));
                 return;
             }
 
@@ -128,13 +141,57 @@ namespace RunGun.Levels
             }
 
             targetTransform.SetPositionAndRotation(
-                transform.position,
-                useSpawnerRotation ? transform.rotation : targetTransform.rotation);
+                GetSpawnPosition(characterController),
+                GetSpawnRotation(targetTransform.rotation));
 
             if (wasEnabled)
             {
                 characterController.enabled = true;
             }
+        }
+
+        public void SetRespawnPoint(Transform respawnPoint, bool useRespawnRotation = true)
+        {
+            if (respawnPoint == null)
+            {
+                return;
+            }
+
+            _activeRespawnPoint = respawnPoint;
+            _activeRespawnUsesSpawnerRotation = useRespawnRotation;
+        }
+
+        public void ResetRespawnPoint()
+        {
+            _activeRespawnPoint = transform;
+            _activeRespawnUsesSpawnerRotation = useSpawnerRotation;
+        }
+
+        private Vector3 GetSpawnPosition(PlayerController playerController)
+        {
+            CharacterController characterController = playerController != null ? playerController.controller : null;
+            if (characterController == null && playerController != null)
+                characterController = playerController.GetComponent<CharacterController>();
+
+            return GetSpawnPosition(characterController);
+        }
+
+        private Vector3 GetSpawnPosition(CharacterController characterController)
+        {
+            Transform respawnPoint = ActiveRespawnPoint;
+            Vector3 position = respawnPoint.position;
+            if (!treatSpawnerAsGroundPoint || characterController == null)
+                return position;
+
+            float bottomToOrigin = (characterController.height * 0.5f) - characterController.center.y;
+            position.y += Mathf.Max(0f, bottomToOrigin + groundSpawnClearance);
+            return position;
+        }
+
+        private Quaternion GetSpawnRotation(Quaternion fallbackRotation)
+        {
+            Transform respawnPoint = ActiveRespawnPoint;
+            return _activeRespawnUsesSpawnerRotation ? respawnPoint.rotation : fallbackRotation;
         }
 
         private Transform GetFallCheckTarget()

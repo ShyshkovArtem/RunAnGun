@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8084334172377766711
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1006886307054453680}
+  - component: {fileID: 1151979903220788277}
+  m_Layer: 0
+  m_Name: DialogueStartWASD
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1006886307054453680
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8084334172377766711}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3, y: 0, z: 9}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1151979903220788277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8084334172377766711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88bbc6c4a481489ca9df493de6627778, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RunGun.Levels.TutorialDialogueController
+  lines:
+  - speakerName: Blue Man
+    text: Hello buddy! Let me quickly bring up you to date.
+    speakerPosePrefab: {fileID: 2736272047063480907, guid: a6dce48185b1cf24fb9f542767adc9c2, type: 3}
+  - speakerName: Blue Man
+    text: We will start with simple movement. Use WASD to walk around and SPACE to
+      jump.
+    speakerPosePrefab: {fileID: 2736272047063480907, guid: a6dce48185b1cf24fb9f542767adc9c2, type: 3}
+  - speakerName: Blue Man
+    text: We will continue when you get to the next platform. See you there!
+    speakerPosePrefab: {fileID: 2736272047063480907, guid: ca5a1075237da5545b10438e8106affd, type: 3}
+  playOnStart: 1
+  hidePoseOnEnd: 1
+  useTypewriter: 1
+  charactersPerSecond: 45
+  enterCompletesCurrentLine: 1
+  dialogueRoot: {fileID: 0}
+  speakerNameText: {fileID: 0}
+  dialogueText: {fileID: 0}
+  poseSpawnAnchor: {fileID: 0}
+  parentPoseToAnchor: 1
+  poseLocalPosition: {x: 0, y: 0, z: 0}
+  poseLocalRotation: {x: 0, y: 0, z: 0}
+  poseLocalScale: {x: 1, y: 1, z: 1}
+  autoFindPlayer: 1
+  playerController: {fileID: 0}
+  weaponController: {fileID: 0}

@@ -101,11 +101,19 @@ namespace ElmanGameDevTools.PlayerAudio
 
                 foreach (var surface in surfaceSettings)
                 {
-                    if (!string.IsNullOrEmpty(surface.tag) && hit.collider.CompareTag(surface.tag))
+                    if (!string.IsNullOrEmpty(surface.tag) && HasTag(hit.collider, surface.tag))
                         return surface.clip;
                 }
             }
             return defaultClip;
+        }
+
+        private static bool HasTag(Collider targetCollider, string tagName)
+        {
+            if (targetCollider == null || string.IsNullOrEmpty(tagName))
+                return false;
+
+            return targetCollider.gameObject.tag == tagName;
         }
 
         /// <summary>

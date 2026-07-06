@@ -30,6 +30,10 @@ namespace ElmanGameDevTools.PlayerSystem
         public float slopeAcceleration = 30f;
         public float uphillSlowdown = 12f;
         public float maxSlopeRunSpeed = 18f;
+        public bool enableStepAssist = true;
+        public float maxStepAssistHeight = 0.35f;
+        public float stepAssistProbeDistance = 0.25f;
+        public float stepAssistClearance = 0.03f;
 
         [Header("EXTERNAL IMPULSES")]
         public float maxExternalHorizontalSpeed = 42f;
@@ -74,6 +78,23 @@ namespace ElmanGameDevTools.PlayerSystem
         [Space]
         public float turnTiltAmount = 1.5f;
         public float maxTotalTilt = 5f;
+
+        [Header("MOVEMENT AUDIO")]
+        public AudioSource movementAudioSource;
+        public AudioSource slideAudioSource;
+        public AudioClip jumpClip;
+        [Range(0f, 1f)] public float jumpVolume = 0.8f;
+        [Range(0.1f, 3f)] public float jumpPitch = 1f;
+        public AudioClip landingClip;
+        [Range(0f, 1f)] public float landingVolume = 0.8f;
+        [Range(0.1f, 3f)] public float landingPitch = 1f;
+        public float minLandingSpeedForSound = 4f;
+        public AudioClip slideStartClip;
+        [Range(0f, 1f)] public float slideStartVolume = 0.75f;
+        [Range(0.1f, 3f)] public float slideStartPitch = 1f;
+        public AudioClip slideLoopClip;
+        [Range(0f, 1f)] public float slideLoopVolume = 0.55f;
+        [Range(0.1f, 3f)] public float slideLoopPitch = 1f;
 
         [Header("CROUCH SETTINGS")]
         public float crouchHeight = 1.2f;
@@ -136,6 +157,7 @@ namespace ElmanGameDevTools.PlayerSystem
         private Camera _playerCameraComponent;
         private readonly Collider[] _standUpHits = new Collider[16];
         private MovementState _currentMovementState = MovementState.Walking;
+        private bool _inputLocked;
 
         public enum MovementState { Walking, Running, Crouching, Sliding, Jumping }
 
@@ -145,9 +167,24 @@ namespace ElmanGameDevTools.PlayerSystem
         public Vector2 MoveInput => _moveInput;
         public float CurrentHorizontalSpeed { get; private set; }
         public MovementState CurrentState => _currentMovementState;
+        public bool InputLocked => _inputLocked;
+
+        public void SetInputLocked(bool locked)
+        {
+            if (_inputLocked == locked)
+                return;
+
+            _inputLocked = locked;
+            ClearMovementState();
+            ForceLookForward();
+            SyncMousePosition();
+        }
 
         public void AddExternalImpulse(Vector3 impulse, float airRedirectStrength = 0f)
         {
+            if (_inputLocked)
+                return;
+
             Vector3 horizontalImpulse = Vector3.ProjectOnPlane(impulse, Vector3.up);
             bool applyAirRedirect = !_isGrounded
                 && !_isSliding
@@ -209,15 +246,15 @@ namespace ElmanGameDevTools.PlayerSystem
             _isSliding = false;
             _isCrouching = false;
             _isGrounded = false;
+            StopSlideLoopSound();
+            ClearInputState();
             _timeSinceLanded = 999f;
             CurrentHorizontalSpeed = 0f;
             _currentMovementState = MovementState.Walking;
 
             _targetYaw = transform.eulerAngles.y;
             _currentYaw = _targetYaw;
-            _targetPitch = 0f;
-            _currentPitch = 0f;
-            _currentTilt = 0f;
+            ForceLookForward();
 
             if (_originalHeight > 0f)
             {
@@ -246,11 +283,13 @@ namespace ElmanGameDevTools.PlayerSystem
         private void OnDisable()
         {
             InputSystem.onEvent -= HandleInputEvent;
+            StopSlideLoopSound();
         }
 
         private void Start()
         {
             if (controller == null) controller = GetComponent<CharacterController>();
+            EnsureMovementAudioSources();
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
             if (Mouse.current != null)
@@ -275,6 +314,18 @@ namespace ElmanGameDevTools.PlayerSystem
         private void Update()
         {
             HandleCursorLock();
+
+            if (_inputLocked)
+            {
+                ClearMovementState();
+                ForceLookForward();
+                CheckGroundStatus();
+                HandleHeightAndCamera();
+                HandleFovChange();
+                if (showInputDebug) UpdateDebugText();
+                return;
+            }
+
             ReadInput();
             CheckGroundStatus();
             HandleCrouchLogic();
@@ -305,16 +356,143 @@ namespace ElmanGameDevTools.PlayerSystem
             _groundNormal = groundHit ? hit.normal : Vector3.up;
 
             if (_isGrounded && !_wasGrounded)
+            {
+                PlayLandingSound(-_velocity.y);
                 _timeSinceLanded = 0f;
+            }
             else if (_isGrounded)
+            {
                 _timeSinceLanded += Time.deltaTime;
+            }
             else
+            {
                 _timeSinceLanded = 999f;
+            }
 
             if (_isGrounded && _velocity.y < 0)
             {
                 _velocity.y = -5f;
             }
+        }
+
+        private void EnsureMovementAudioSources()
+        {
+            if (movementAudioSource == null)
+                movementAudioSource = gameObject.AddComponent<AudioSource>();
+
+            if (slideAudioSource == null)
+                slideAudioSource = gameObject.AddComponent<AudioSource>();
+
+            ConfigureMovementAudioSource(movementAudioSource);
+            ConfigureMovementAudioSource(slideAudioSource);
+            slideAudioSource.loop = true;
+        }
+
+        private static void ConfigureMovementAudioSource(AudioSource audioSource)
+        {
+            if (audioSource == null)
+                return;
+
+            audioSource.playOnAwake = false;
+            audioSource.spatialBlend = 0f;
+        }
+
+        private void PlayJumpSound()
+        {
+            PlayOneShot(jumpClip, jumpVolume, jumpPitch);
+        }
+
+        private void PlayLandingSound(float landingSpeed)
+        {
+            if (landingClip == null || landingSpeed < minLandingSpeedForSound)
+                return;
+
+            PlayOneShot(landingClip, landingVolume, landingPitch);
+        }
+
+        private void PlaySlideStartSound()
+        {
+            PlayOneShot(slideStartClip, slideStartVolume, slideStartPitch);
+        }
+
+        private void StartSlideLoopSound()
+        {
+            if (slideAudioSource == null || slideLoopClip == null)
+                return;
+
+            slideAudioSource.clip = slideLoopClip;
+            slideAudioSource.volume = slideLoopVolume;
+            slideAudioSource.pitch = slideLoopPitch;
+
+            if (!slideAudioSource.isPlaying)
+                slideAudioSource.Play();
+        }
+
+        private void StopSlideLoopSound()
+        {
+            if (slideAudioSource != null && slideAudioSource.isPlaying)
+                slideAudioSource.Stop();
+        }
+
+        private void PlayOneShot(AudioClip clip, float volume, float pitch)
+        {
+            if (movementAudioSource == null || clip == null)
+                return;
+
+            movementAudioSource.pitch = pitch;
+            movementAudioSource.PlayOneShot(clip, volume);
+        }
+
+        private void ClearMovementState()
+        {
+            ClearInputState();
+            _velocity = Vector3.zero;
+            _horizontalVelocity = Vector3.zero;
+            _slideVelocity = Vector3.zero;
+            _isSliding = false;
+            _isCrouching = false;
+            CurrentHorizontalSpeed = 0f;
+            StopSlideLoopSound();
+        }
+
+        private void ClearInputState()
+        {
+            _moveInput = Vector2.zero;
+            _lookInput = Vector2.zero;
+            _jumpPressedThisFrame = false;
+            _sprintPressed = false;
+            _crouchPressed = false;
+            _crouchPressedThisFrame = false;
+            _queuedMouseDelta = Vector2.zero;
+            _smoothInputX = 0f;
+        }
+
+        private void ForceLookForward()
+        {
+            _targetYaw = transform.eulerAngles.y;
+            _currentYaw = _targetYaw;
+            _targetPitch = 0f;
+            _currentPitch = 0f;
+            _currentTilt = 0f;
+            _smoothInputX = 0f;
+
+            transform.rotation = Quaternion.Euler(0f, _currentYaw, 0f);
+            if (playerCamera != null)
+                playerCamera.localRotation = Quaternion.identity;
+        }
+
+        private void SyncMousePosition()
+        {
+            Mouse mouse = GetActiveMouse();
+            if (mouse == null)
+            {
+                _hasLastMousePosition = false;
+                return;
+            }
+
+            _lastMousePosition = mouse.position.ReadValue();
+            _hasLastMousePosition = true;
+            _queuedMouseDelta = Vector2.zero;
         }
 
         private void UpdateMovementState()
@@ -357,6 +535,7 @@ namespace ElmanGameDevTools.PlayerSystem
             {
                 ApplyJumpTakeoffDirection(moveInput);
                 _velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+                PlayJumpSound();
                 _isGrounded = false;
                 _timeSinceLanded = 999f;
             }
@@ -396,7 +575,63 @@ namespace ElmanGameDevTools.PlayerSystem
                 ApplyAirMovement(moveInput);
             }
 
-            controller.Move(_horizontalVelocity * Time.deltaTime);
+            MoveWithStepAssist(_horizontalVelocity * Time.deltaTime);
+        }
+
+        private void MoveWithStepAssist(Vector3 horizontalDisplacement)
+        {
+            if (!_isGrounded || !enableStepAssist || horizontalDisplacement.sqrMagnitude < 0.000001f)
+            {
+                controller.Move(horizontalDisplacement);
+                return;
+            }
+
+            Vector3 previousPosition = transform.position;
+            CollisionFlags collisionFlags = controller.Move(horizontalDisplacement);
+            if ((collisionFlags & CollisionFlags.Sides) == 0)
+                return;
+
+            float maxStepHeight = Mathf.Min(maxStepAssistHeight, controller.stepOffset);
+            if (maxStepHeight <= 0f)
+                return;
+
+            bool wasEnabled = controller.enabled;
+            if (wasEnabled)
+                controller.enabled = false;
+
+            transform.position = previousPosition;
+
+            if (wasEnabled)
+                controller.enabled = true;
+
+            CollisionFlags stepUpFlags = controller.Move(Vector3.up * (maxStepHeight + stepAssistClearance));
+            if ((stepUpFlags & CollisionFlags.Above) != 0)
+            {
+                ResetControllerPosition(previousPosition);
+                return;
+            }
+
+            CollisionFlags retryFlags = controller.Move(horizontalDisplacement);
+            if ((retryFlags & CollisionFlags.Sides) != 0)
+            {
+                ResetControllerPosition(previousPosition);
+                controller.Move(horizontalDisplacement);
+                return;
+            }
+
+            controller.Move(Vector3.down * (maxStepHeight + stepAssistClearance + groundCheckDistance));
+        }
+
+        private void ResetControllerPosition(Vector3 position)
+        {
+            bool wasEnabled = controller.enabled;
+            if (wasEnabled)
+                controller.enabled = false;
+
+            transform.position = position;
+
+            if (wasEnabled)
+                controller.enabled = true;
         }
 
         private void ApplyGroundSlopeForces()
@@ -534,6 +769,8 @@ namespace ElmanGameDevTools.PlayerSystem
             _slideVelocity = slideDirection * Mathf.Min(startSpeed, maxSlideSpeed);
             _horizontalVelocity = Vector3.zero;
             _isSliding = true;
+            PlaySlideStartSound();
+            StartSlideLoopSound();
         }
 
         private void EndSlide()
@@ -541,6 +778,7 @@ namespace ElmanGameDevTools.PlayerSystem
             _horizontalVelocity = _slideVelocity;
             _isSliding = false;
             _slideVelocity = Vector3.zero;
+            StopSlideLoopSound();
         }
 
         private bool IsTryingToSlideDownhill(Vector3 horizontalVelocity)
@@ -572,6 +810,7 @@ namespace ElmanGameDevTools.PlayerSystem
             if (_jumpPressedThisFrame && _isGrounded)
             {
                 _velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+                PlayJumpSound();
                 _isGrounded = false;
                 EndSlide();
                 return;
@@ -791,6 +1030,9 @@ namespace ElmanGameDevTools.PlayerSystem
 
         private void HandleInputEvent(InputEventPtr eventPtr, InputDevice device)
         {
+            if (_inputLocked)
+                return;
+
             if (device is not Mouse mouse)
                 return;
 

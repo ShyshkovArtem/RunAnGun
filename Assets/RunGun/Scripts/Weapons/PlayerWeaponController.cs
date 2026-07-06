@@ -161,6 +161,7 @@ namespace RunGun.Weapons
         private readonly Dictionary<Transform, RocketVisualPose> _rocketVisualPoses = new();
         private static Mesh _bulletHoleMesh;
         private static Material _bulletHoleMaterial;
+        private bool _inputLocked;
 
         private sealed class ViewModelPose
         {
@@ -238,6 +239,11 @@ namespace RunGun.Weapons
         private void Update()
         {
             UpdateReload();
+            if (_inputLocked)
+            {
+                return;
+            }
+
             ReadWeaponSelectionInput();
             ReadFireInput();
             ReadReloadInput();
@@ -264,6 +270,11 @@ namespace RunGun.Weapons
                     return;
                 }
             }
+        }
+
+        public void SetInputLocked(bool locked)
+        {
+            _inputLocked = locked;
         }
 
         public void SelectWeapon(int index, bool force)
