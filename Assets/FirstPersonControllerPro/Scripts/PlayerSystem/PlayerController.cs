@@ -313,8 +313,6 @@ namespace ElmanGameDevTools.PlayerSystem
 
         private void Update()
         {
-            HandleCursorLock();
-
             if (_inputLocked)
             {
                 ClearMovementState();
@@ -326,6 +324,7 @@ namespace ElmanGameDevTools.PlayerSystem
                 return;
             }
 
+            HandleCursorLock();
             ReadInput();
             CheckGroundStatus();
             HandleCrouchLogic();
