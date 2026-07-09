@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using ElmanGameDevTools.PlayerSystem;
 using RunGun.Weapons;
 using TMPro;
@@ -40,13 +41,16 @@ namespace RunGun.Levels
         [SerializeField] private bool autoFindPlayer = true;
         [SerializeField] private PlayerController playerController;
         [SerializeField] private PlayerWeaponController weaponController;
+        [SerializeField] private LevelPlayerSpawner playerSpawner;
 
         private bool _completed;
         private bool _paused;
+        private readonly List<TMP_Text> _levelTexts = new();
 
         private void Awake()
         {
             AutoBindUi();
+            CacheLevelTexts();
 
             if (autoFindPlayer)
                 FindPlayerReferences();
@@ -59,6 +63,7 @@ namespace RunGun.Levels
 
             Time.timeScale = 1f;
             BindButtons();
+            UpdateLevelText();
         }
 
         private void OnDestroy()
@@ -100,7 +105,36 @@ namespace RunGun.Levels
         public void RetryLevel()
         {
             Time.timeScale = 1f;
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            _paused = false;
+            _completed = false;
+
+            if (autoFindPlayer && (playerController == null || weaponController == null || playerSpawner == null))
+                FindPlayerReferences();
+
+            if (trialFinalPanel != null)
+                trialFinalPanel.SetActive(false);
+
+            if (trialPausePanel != null)
+                trialPausePanel.SetActive(false);
+
+            SetPlayerLocked(false);
+            ResetLevelSystems();
+
+            if (playerSpawner != null)
+            {
+                playerSpawner.ResetRespawnPoint();
+                playerSpawner.RespawnPlayer();
+            }
+            else if (playerController != null)
+            {
+                playerController.TeleportTo(playerController.transform.position, playerController.transform.rotation);
+            }
+
+            weaponController?.ResetForLevelRetry();
+            UpdateLevelText();
+
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
 
         public void ContinueToNextLevel()
@@ -192,12 +226,21 @@ namespace RunGun.Levels
 
         private void UpdateLevelText()
         {
-            if (levelText == null)
+            if (_levelTexts.Count == 0)
+                CacheLevelTexts();
+
+            if (_levelTexts.Count == 0)
                 return;
 
-            levelText.text = string.IsNullOrWhiteSpace(levelDisplayName)
+            string displayName = string.IsNullOrWhiteSpace(levelDisplayName)
                 ? SceneManager.GetActiveScene().name
                 : levelDisplayName;
+
+            for (int i = 0; i < _levelTexts.Count; i++)
+            {
+                if (_levelTexts[i] != null)
+                    _levelTexts[i].text = displayName;
+            }
         }
 
         private void SetPlayerLocked(bool locked)
@@ -207,6 +250,29 @@ namespace RunGun.Levels
 
             if (weaponController != null)
                 weaponController.SetInputLocked(locked);
+        }
+
+        private void ResetLevelSystems()
+        {
+            var checkpoints = FindSceneComponents<LevelCheckpoint>();
+            for (int i = 0; i < checkpoints.Count; i++)
+                checkpoints[i].ResetCheckpoint();
+
+            var finishTriggers = FindSceneComponents<TrialFinishTrigger>();
+            for (int i = 0; i < finishTriggers.Count; i++)
+                finishTriggers[i].ResetTrigger();
+
+            var targetGroups = FindSceneComponents<AimTargetGroupController>();
+            for (int i = 0; i < targetGroups.Count; i++)
+                targetGroups[i].ResetForLevelRetry();
+
+            var targetTriggers = FindSceneComponents<AimTargetGroupTrigger>();
+            for (int i = 0; i < targetTriggers.Count; i++)
+                targetTriggers[i].ResetTrigger();
+
+            var movingPlatforms = FindSceneComponents<MovingPlatform>();
+            for (int i = 0; i < movingPlatforms.Count; i++)
+                movingPlatforms[i].StopAndReset();
         }
 
         private void SetPaused(bool paused)
@@ -245,6 +311,36 @@ namespace RunGun.Levels
 
             if (weaponController == null)
                 weaponController = FindFirstObjectByType<PlayerWeaponController>();
+
+            if (playerSpawner == null)
+                playerSpawner = FindFirstObjectByType<LevelPlayerSpawner>();
+        }
+
+        private void CacheLevelTexts()
+        {
+            _levelTexts.Clear();
+            AddLevelText(levelText);
+
+            var texts = Resources.FindObjectsOfTypeAll<TMP_Text>();
+            for (int i = 0; i < texts.Length; i++)
+            {
+                TMP_Text candidate = texts[i];
+                if (candidate == null || !candidate.gameObject.scene.IsValid())
+                    continue;
+
+                if (candidate.name != LevelTextName && candidate.name != LegacyLevelTextName)
+                    continue;
+
+                AddLevelText(candidate);
+            }
+        }
+
+        private void AddLevelText(TMP_Text text)
+        {
+            if (text == null || _levelTexts.Contains(text))
+                return;
+
+            _levelTexts.Add(text);
         }
 
         private static T FindChildComponent<T>(Transform root, string childName) where T : Component
@@ -288,6 +384,22 @@ namespace RunGun.Levels
             }
 
             return null;
+        }
+
+        private static List<T> FindSceneComponents<T>() where T : Component
+        {
+            var results = new List<T>();
+            var components = Resources.FindObjectsOfTypeAll<T>();
+            for (int i = 0; i < components.Length; i++)
+            {
+                T component = components[i];
+                if (component == null || !component.gameObject.scene.IsValid())
+                    continue;
+
+                results.Add(component);
+            }
+
+            return results;
         }
     }
 }

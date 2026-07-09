@@ -19,6 +19,11 @@ namespace RunGun.Levels
             triggerCollider.isTrigger = true;
         }
 
+        public void ResetTrigger()
+        {
+            _completed = false;
+        }
+
         private void OnTriggerEnter(Collider other)
         {
             if (_completed || !IsPlayer(other))

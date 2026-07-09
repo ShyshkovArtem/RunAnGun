@@ -277,6 +277,28 @@ namespace RunGun.Weapons
             _inputLocked = locked;
         }
 
+        public void ResetForLevelRetry()
+        {
+            CancelReload();
+            _inputLocked = false;
+            _nextFireTime = 0f;
+            _switchTimer = 0f;
+            _shotBlend = 0f;
+
+            for (var i = 0; i < weapons.Count; i++)
+            {
+                var weapon = weapons[i];
+                if (weapon == null)
+                    continue;
+
+                weapon.ammoInMagazine = weapon.magazineSize;
+                SetRocketLoadedVisible(weapon);
+            }
+
+            SelectWeapon(Mathf.Clamp(startWeaponIndex, 0, weapons.Count - 1), true);
+            AmmoChanged?.Invoke(CurrentWeapon);
+        }
+
         public void SelectWeapon(int index, bool force)
         {
             if (!IsValidIndex(index))
@@ -343,6 +365,7 @@ namespace RunGun.Weapons
             GetAimRay(out Vector3 rayOrigin, out Vector3 aimDirection);
             bool hasHit = TryRaycastWeapon(weapon.type, rayOrigin, aimDirection, out RaycastHit hit);
             SpawnMuzzleFlash(weapon, aimDirection);
+            NotifyWeaponHit(weapon, hasHit, hit);
 
             if (weapon.type == WeaponType.Bazooka)
             {
@@ -1195,6 +1218,15 @@ namespace RunGun.Weapons
         private bool TryRaycastWeapon(WeaponType weaponType, Vector3 rayOrigin, Vector3 aimDirection, out RaycastHit hit)
         {
             return Physics.Raycast(rayOrigin, aimDirection, out hit, GetBulletHoleRange(weaponType), impactMask, QueryTriggerInteraction.Ignore);
+        }
+
+        private void NotifyWeaponHit(WeaponDefinition weapon, bool hasHit, RaycastHit hit)
+        {
+            if (!hasHit || hit.collider == null)
+                return;
+
+            var receiver = hit.collider.GetComponentInParent<IWeaponHitReceiver>();
+            receiver?.ReceiveWeaponHit(new WeaponHitInfo(weapon.type, weapon.impactPower, hit, gameObject));
         }
 
         private Mesh GetBulletHoleMesh()

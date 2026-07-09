@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace RunGun.Levels
 {
@@ -56,6 +58,9 @@ namespace RunGun.Levels
         [SerializeField] private bool drawPath = true;
         [SerializeField] private Color pathColor = new(0.1f, 0.9f, 1f, 1f);
 
+        [Header("Events")]
+        [SerializeField] private UnityEvent movementCompleted = new();
+
         private readonly Collider[] _carryHits = new Collider[16];
         private readonly HashSet<CharacterController> _carriedControllers = new();
         private Rigidbody _rigidbody;
@@ -70,6 +75,13 @@ namespace RunGun.Levels
         private float _directionSign = 1f;
         private float _waitTimer;
         private bool _isMoving;
+        private bool _completed;
+        private bool _hasCapturedStartPose;
+
+        public bool IsMoving => _isMoving;
+        public bool HasCompleted => _completed;
+        public UnityEvent MovementCompleted => movementCompleted;
+        public event Action<MovingPlatform> Completed;
 
         private void Awake()
         {
@@ -95,6 +107,8 @@ namespace RunGun.Levels
 
         private void FixedUpdate()
         {
+            EnsureStartPoseCaptured();
+
             if (!_isMoving && !rotate)
                 return;
 
@@ -113,33 +127,60 @@ namespace RunGun.Levels
 
         public void Play()
         {
+            EnsureStartPoseCaptured();
+            _completed = false;
             _isMoving = true;
         }
 
         public void Pause()
         {
+            EnsureStartPoseCaptured();
             _isMoving = false;
         }
 
         public void Toggle()
         {
+            EnsureStartPoseCaptured();
             _isMoving = !_isMoving;
         }
 
         public void ResetPlatform()
         {
+            EnsureStartPoseCaptured();
             _progress = startAtEnd ? 1f : 0f;
             _directionSign = startAtEnd ? -1f : 1f;
             _waitTimer = 0f;
+            _completed = false;
             _targetPosition = Vector3.LerpUnclamped(GetPointA(), GetPointB(), GetEasedProgress());
             _targetRotation = _startRotation;
-            ApplyPose();
+            ApplyPoseImmediate();
+        }
+
+        public void StopAndReset()
+        {
+            _isMoving = false;
+            ResetPlatform();
+        }
+
+        public void ResetAndPlay()
+        {
+            ResetPlatform();
+            Play();
         }
 
         private void CacheComponents()
         {
             _rigidbody = GetComponent<Rigidbody>();
             _platformCollider = GetComponent<Collider>();
+        }
+
+        private void EnsureStartPoseCaptured()
+        {
+            if (_hasCapturedStartPose)
+                return;
+
+            CacheComponents();
+            CaptureStartPose();
         }
 
         private void CaptureStartPose()
@@ -152,6 +193,7 @@ namespace RunGun.Levels
             _lastRotation = _startRotation;
             _targetPosition = _startPosition;
             _targetRotation = _startRotation;
+            _hasCapturedStartPose = true;
         }
 
         private void StepMovement(float deltaTime)
@@ -189,6 +231,12 @@ namespace RunGun.Levels
                 case LoopMode.Once:
                     _progress = Mathf.Clamp01(_progress);
                     _isMoving = false;
+                    if (!_completed)
+                    {
+                        _completed = true;
+                        Completed?.Invoke(this);
+                        movementCompleted?.Invoke();
+                    }
                     break;
             }
         }
@@ -219,6 +267,27 @@ namespace RunGun.Levels
             {
                 transform.SetPositionAndRotation(_targetPosition, _targetRotation);
             }
+        }
+
+        private void ApplyPoseImmediate()
+        {
+            _lastPosition = _targetPosition;
+            _lastRotation = _targetRotation;
+
+            if (_rigidbody != null)
+            {
+                _rigidbody.position = _targetPosition;
+                _rigidbody.rotation = _targetRotation;
+
+                if (!_rigidbody.isKinematic)
+                {
+                    _rigidbody.linearVelocity = Vector3.zero;
+                    _rigidbody.angularVelocity = Vector3.zero;
+                }
+            }
+
+            transform.SetPositionAndRotation(_targetPosition, _targetRotation);
+            Physics.SyncTransforms();
         }
 
         private float GetEasedProgress()

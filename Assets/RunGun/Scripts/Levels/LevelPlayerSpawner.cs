@@ -1,3 +1,4 @@
+using System;
 using ElmanGameDevTools.PlayerSystem;
 using UnityEngine;
 
@@ -24,6 +25,7 @@ namespace RunGun.Levels
         public GameObject SpawnedPlayer { get; private set; }
 
         public Transform ActiveRespawnPoint => _activeRespawnPoint != null ? _activeRespawnPoint : transform;
+        public event Action PlayerRespawned;
 
         private void Awake()
         {
@@ -65,10 +67,12 @@ namespace RunGun.Levels
                 playerController.TeleportTo(
                     GetSpawnPosition(playerController),
                     GetSpawnRotation(playerController.transform.rotation));
+                PlayerRespawned?.Invoke();
                 return;
             }
 
             PlacePlayer(SpawnedPlayer);
+            PlayerRespawned?.Invoke();
         }
 
         private void SpawnOrMovePlayer()

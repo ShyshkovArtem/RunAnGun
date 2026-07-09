@@ -22,6 +22,11 @@ namespace RunGun.Levels
             respawnPoint = transform;
         }
 
+        public void ResetCheckpoint()
+        {
+            _activated = false;
+        }
+
         private void OnTriggerEnter(Collider other)
         {
             if (activateOnce && _activated)
