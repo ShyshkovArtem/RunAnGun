@@ -2603,6 +2603,75 @@ MonoBehaviour:
     reloadClip: {fileID: 8300000, guid: 1bae85e7632fcad478c478215a28db6e, type: 3}
     reloadVolume: 1
     reloadPitch: 2
+  - type: 1
+    displayName: Shotgun
+    unlocked: 1
+    magazineSize: 5
+    ammoInMagazine: 5
+    reloadTime: 0.9
+    reloadOneByOne: 1
+    fireInterval: 0.65
+    impactPower: 2
+    viewModel: {fileID: 6788962586240676451}
+    viewModelAnimator: {fileID: 2321352103269571699}
+    reloadAnimatorController: {fileID: 9100000, guid: 3f733069e7a9475498200f623a8ed003, type: 2}
+    reloadAnimationState: ShotgunReload
+    rocketVisual: {fileID: 0}
+    muzzleTransform: {fileID: 1934887335781020186}
+    muzzleFlashPrefab: {fileID: 0}
+    impactEffectPrefab: {fileID: 0}
+    shotClip: {fileID: 8300000, guid: 5f315947baa643643b0dbb6ff24511cc, type: 3}
+    shotVolume: 0.2
+    shotPitch: 1
+    reloadClip: {fileID: 8300000, guid: e73607695616aa346a7644fb09185d97, type: 3}
+    reloadVolume: 0.2
+    reloadPitch: 1
+  - type: 2
+    displayName: Rifle
+    unlocked: 1
+    magazineSize: 15
+    ammoInMagazine: 15
+    reloadTime: 1.5
+    reloadOneByOne: 0
+    fireInterval: 0.1
+    impactPower: 2
+    viewModel: {fileID: 6479993843168017577}
+    viewModelAnimator: {fileID: 201706696157081256}
+    reloadAnimatorController: {fileID: 9100000, guid: 2f733069e7a9475498200f623a8ed002, type: 2}
+    reloadAnimationState: RifleReload
+    rocketVisual: {fileID: 0}
+    muzzleTransform: {fileID: 7206631601592288530}
+    muzzleFlashPrefab: {fileID: 0}
+    impactEffectPrefab: {fileID: 0}
+    shotClip: {fileID: 8300000, guid: c808163b8b9618447ac679aeac111838, type: 3}
+    shotVolume: 1
+    shotPitch: 1
+    reloadClip: {fileID: 8300000, guid: fea98de8d2eb97544862df455c75ad0f, type: 3}
+    reloadVolume: 1
+    reloadPitch: 2
+  - type: 3
+    displayName: Bazooka
+    unlocked: 1
+    magazineSize: 1
+    ammoInMagazine: 1
+    reloadTime: 2.5
+    reloadOneByOne: 0
+    fireInterval: 1
+    impactPower: 3
+    viewModel: {fileID: 5771290808003766873}
+    viewModelAnimator: {fileID: 337302263661462526}
+    reloadAnimatorController: {fileID: 9100000, guid: 1d733069e7a9475498200f623a8ed001, type: 2}
+    reloadAnimationState: BazookaReload
+    rocketVisual: {fileID: 0}
+    muzzleTransform: {fileID: 5385553076405706902}
+    muzzleFlashPrefab: {fileID: 0}
+    impactEffectPrefab: {fileID: 0}
+    shotClip: {fileID: 8300000, guid: 197e84e13ba2fc343a0961b1bb9a8643, type: 3}
+    shotVolume: 0.7
+    shotPitch: 1
+    reloadClip: {fileID: 8300000, guid: 60bb617472103c64bb0202b94bcd771b, type: 3}
+    reloadVolume: 1
+    reloadPitch: 1.5
   startWeaponIndex: 0
   gunPlace: {fileID: 2450379135684436138}
   aimCamera: {fileID: 2884546045553303299}
