@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &9172975144591995437
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2680253101937103847}
+  - component: {fileID: 8750438153327570425}
+  m_Layer: 0
+  m_Name: DialogueStart3
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2680253101937103847
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9172975144591995437}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8750438153327570425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9172975144591995437}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88bbc6c4a481489ca9df493de6627778, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RunGun.Levels.TutorialDialogueController
+  lines:
+  - speakerName: Blue Guy
+    text: Hello! You may already mention that pistol has impulse while shooting.
+    speakerPosePrefab: {fileID: 2736272047063480907, guid: 9804a0ccb68c4404f9d2f5dce9c70874, type: 3}
+  - speakerName: Blue Guy
+    text: That is true for every gun in the game, but of course they have some differeces.
+    speakerPosePrefab: {fileID: 2736272047063480907, guid: a6dce48185b1cf24fb9f542767adc9c2, type: 3}
+  - speakerName: Blue Guy
+    text: On this level you will learn how to use shotgun for movement! First try
+      to shoot under you and jump.
+    speakerPosePrefab: {fileID: 2736272047063480907, guid: 9804a0ccb68c4404f9d2f5dce9c70874, type: 3}
+  playOnStart: 1
+  hidePoseOnEnd: 1
+  useTypewriter: 1
+  charactersPerSecond: 45
+  enterCompletesCurrentLine: 1
+  dialogueRoot: {fileID: 0}
+  speakerNameText: {fileID: 0}
+  dialogueText: {fileID: 0}
+  poseSpawnAnchor: {fileID: 0}
+  parentPoseToAnchor: 1
+  poseLocalPosition: {x: 0, y: 0, z: 0}
+  poseLocalRotation: {x: 0, y: 0, z: 0}
+  poseLocalScale: {x: 1, y: 1, z: 1}
+  autoFindPlayer: 1
+  playerController: {fileID: 0}
+  weaponController: {fileID: 0}

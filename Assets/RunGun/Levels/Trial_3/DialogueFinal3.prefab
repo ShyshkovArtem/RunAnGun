@@ -1,0 +1,168 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6984571821975270481
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1837788346038253248}
+  - component: {fileID: 1184832910463638114}
+  m_Layer: 0
+  m_Name: DialogueFinal3
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1837788346038253248
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6984571821975270481}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 6661063520587521772}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1184832910463638114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6984571821975270481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88bbc6c4a481489ca9df493de6627778, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RunGun.Levels.TutorialDialogueController
+  lines:
+  - speakerName: Blue Guy
+    text: Nice, you were able to get here!
+    speakerPosePrefab: {fileID: 7654791619888061114, guid: 1336c22a2ea74af42961e46ed56d15ae, type: 3}
+  - speakerName: Blue Guy
+    text: Now use the pistol to shoot targets abd activate a platform.
+    speakerPosePrefab: {fileID: 2736272047063480907, guid: a6dce48185b1cf24fb9f542767adc9c2, type: 3}
+  - speakerName: Blue Guy
+    text: After that use shotgun to get to the finish. Little hint for you move BACKWARDS
+      and shoot AWAY from you for the nost effective of impulse use!
+    speakerPosePrefab: {fileID: 2736272047063480907, guid: ca5a1075237da5545b10438e8106affd, type: 3}
+  playOnStart: 1
+  hidePoseOnEnd: 1
+  useTypewriter: 1
+  charactersPerSecond: 45
+  enterCompletesCurrentLine: 1
+  dialogueRoot: {fileID: 0}
+  speakerNameText: {fileID: 0}
+  dialogueText: {fileID: 0}
+  poseSpawnAnchor: {fileID: 0}
+  parentPoseToAnchor: 1
+  poseLocalPosition: {x: 0, y: 0, z: 0}
+  poseLocalRotation: {x: 0, y: 0, z: 0}
+  poseLocalScale: {x: 1, y: 1, z: 1}
+  autoFindPlayer: 1
+  playerController: {fileID: 0}
+  weaponController: {fileID: 0}
+--- !u!1001 &5652088455580765185
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1837788346038253248}
+    m_Modifications:
+    - target: {fileID: 1297205450320958189, guid: ac37e81b31a8c624fb0298462c96d2c7, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1297205450320958189, guid: ac37e81b31a8c624fb0298462c96d2c7, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 13.989895
+      objectReference: {fileID: 0}
+    - target: {fileID: 1297205450320958189, guid: ac37e81b31a8c624fb0298462c96d2c7, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 50.952778
+      objectReference: {fileID: 0}
+    - target: {fileID: 1297205450320958189, guid: ac37e81b31a8c624fb0298462c96d2c7, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1297205450320958189, guid: ac37e81b31a8c624fb0298462c96d2c7, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1297205450320958189, guid: ac37e81b31a8c624fb0298462c96d2c7, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1297205450320958189, guid: ac37e81b31a8c624fb0298462c96d2c7, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1297205450320958189, guid: ac37e81b31a8c624fb0298462c96d2c7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1297205450320958189, guid: ac37e81b31a8c624fb0298462c96d2c7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1297205450320958189, guid: ac37e81b31a8c624fb0298462c96d2c7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5174637640594960006, guid: ac37e81b31a8c624fb0298462c96d2c7, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5174637640594960006, guid: ac37e81b31a8c624fb0298462c96d2c7, type: 3}
+      propertyPath: dialogueController
+      value: 
+      objectReference: {fileID: 1184832910463638114}
+    - target: {fileID: 8627876754087932195, guid: ac37e81b31a8c624fb0298462c96d2c7, type: 3}
+      propertyPath: m_Name
+      value: D_Trigger
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8627876754087932195, guid: ac37e81b31a8c624fb0298462c96d2c7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5519066349878282294}
+  m_SourcePrefab: {fileID: 100100000, guid: ac37e81b31a8c624fb0298462c96d2c7, type: 3}
+--- !u!1 &4164739709063970082 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8627876754087932195, guid: ac37e81b31a8c624fb0298462c96d2c7, type: 3}
+  m_PrefabInstance: {fileID: 5652088455580765185}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5519066349878282294
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4164739709063970082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58a91c5e715c45eab1b17795c5106e83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RunGun.Levels.AimTargetGroupTrigger
+  targetGroup: {fileID: 0}
+  activateOnce: 1
+  reactivateAfterFail: 1
+  stayActivatedAfterComplete: 1
+--- !u!4 &6661063520587521772 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1297205450320958189, guid: ac37e81b31a8c624fb0298462c96d2c7, type: 3}
+  m_PrefabInstance: {fileID: 5652088455580765185}
+  m_PrefabAsset: {fileID: 0}
