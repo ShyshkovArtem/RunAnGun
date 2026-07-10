@@ -20,6 +20,7 @@ namespace RunGun.Levels
         private const string MenuButtonName = "MenuBtn";
         private const string RetryButtonName = "RetryBtn";
         private const string ContinueButtonName = "ContinueBtn";
+        private const string NextLevelButtonName = "NextLvlBtn";
 
         [Header("Level")]
         [SerializeField] private string levelDisplayName;
@@ -132,6 +133,7 @@ namespace RunGun.Levels
 
             weaponController?.ResetForLevelRetry();
             UpdateLevelText();
+            RestartPlayOnStartDialogues();
 
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
@@ -203,6 +205,9 @@ namespace RunGun.Levels
             if (continueButton == null)
                 continueButton = FindChildComponent<Button>(panelTransform, ContinueButtonName);
 
+            if (continueButton == null)
+                continueButton = FindChildComponent<Button>(panelTransform, NextLevelButtonName);
+
             Transform pausePanelTransform = trialPausePanel != null ? trialPausePanel.transform : null;
             if (pauseMenuButton == null)
                 pauseMenuButton = FindChildComponent<Button>(pausePanelTransform, MenuButtonName);
@@ -272,7 +277,26 @@ namespace RunGun.Levels
 
             var movingPlatforms = FindSceneComponents<MovingPlatform>();
             for (int i = 0; i < movingPlatforms.Count; i++)
-                movingPlatforms[i].StopAndReset();
+                movingPlatforms[i].ResetForLevelRetry();
+
+            var dialogueControllers = FindSceneComponents<TutorialDialogueController>();
+            for (int i = 0; i < dialogueControllers.Count; i++)
+                dialogueControllers[i].ResetForLevelRetry();
+
+            var dialogueTriggers = FindSceneComponents<TutorialDialogueTrigger>();
+            for (int i = 0; i < dialogueTriggers.Count; i++)
+                dialogueTriggers[i].ResetTrigger();
+        }
+
+        private void RestartPlayOnStartDialogues()
+        {
+            var dialogueControllers = FindSceneComponents<TutorialDialogueController>();
+            for (int i = 0; i < dialogueControllers.Count; i++)
+            {
+                TutorialDialogueController controller = dialogueControllers[i];
+                if (controller != null && controller.PlayOnStart)
+                    controller.StartDialogue();
+            }
         }
 
         private void SetPaused(bool paused)

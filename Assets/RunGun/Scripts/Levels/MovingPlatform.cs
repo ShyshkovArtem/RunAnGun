@@ -162,6 +162,12 @@ namespace RunGun.Levels
             ResetPlatform();
         }
 
+        public void ResetForLevelRetry()
+        {
+            ResetPlatform();
+            _isMoving = moveOnPlay;
+        }
+
         public void ResetAndPlay()
         {
             ResetPlatform();

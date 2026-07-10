@@ -138,7 +138,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5383332717273741120
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1566,7 +1566,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Trial 1 - Move
+  m_text: Level Name
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -1656,7 +1656,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &7531193197630930703
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1678,7 +1678,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: -125, y: 0}
-  m_SizeDelta: {x: 250, y: 600}
+  m_SizeDelta: {x: 250, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7740866188620201109
 CanvasRenderer:
@@ -1865,7 +1865,7 @@ GameObject:
   - component: {fileID: 218970447692137812}
   - component: {fileID: 3896868386696334113}
   m_Layer: 5
-  m_Name: ContinueBtn
+  m_Name: NextLvlBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2574,7 +2574,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2937952180854084144}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 627611b132969fa4ea342d851c8adae3, type: 3}
   m_Name: 
@@ -2603,75 +2603,6 @@ MonoBehaviour:
     reloadClip: {fileID: 8300000, guid: 1bae85e7632fcad478c478215a28db6e, type: 3}
     reloadVolume: 1
     reloadPitch: 2
-  - type: 1
-    displayName: Shotgun
-    unlocked: 1
-    magazineSize: 5
-    ammoInMagazine: 5
-    reloadTime: 0.9
-    reloadOneByOne: 1
-    fireInterval: 0.65
-    impactPower: 2
-    viewModel: {fileID: 6788962586240676451}
-    viewModelAnimator: {fileID: 2321352103269571699}
-    reloadAnimatorController: {fileID: 9100000, guid: 3f733069e7a9475498200f623a8ed003, type: 2}
-    reloadAnimationState: ShotgunReload
-    rocketVisual: {fileID: 0}
-    muzzleTransform: {fileID: 1934887335781020186}
-    muzzleFlashPrefab: {fileID: 0}
-    impactEffectPrefab: {fileID: 0}
-    shotClip: {fileID: 8300000, guid: 5f315947baa643643b0dbb6ff24511cc, type: 3}
-    shotVolume: 0.2
-    shotPitch: 1
-    reloadClip: {fileID: 8300000, guid: e73607695616aa346a7644fb09185d97, type: 3}
-    reloadVolume: 0.2
-    reloadPitch: 1
-  - type: 2
-    displayName: Rifle
-    unlocked: 1
-    magazineSize: 15
-    ammoInMagazine: 15
-    reloadTime: 1.5
-    reloadOneByOne: 0
-    fireInterval: 0.1
-    impactPower: 2
-    viewModel: {fileID: 6479993843168017577}
-    viewModelAnimator: {fileID: 201706696157081256}
-    reloadAnimatorController: {fileID: 9100000, guid: 2f733069e7a9475498200f623a8ed002, type: 2}
-    reloadAnimationState: RifleReload
-    rocketVisual: {fileID: 0}
-    muzzleTransform: {fileID: 7206631601592288530}
-    muzzleFlashPrefab: {fileID: 0}
-    impactEffectPrefab: {fileID: 0}
-    shotClip: {fileID: 8300000, guid: c808163b8b9618447ac679aeac111838, type: 3}
-    shotVolume: 1
-    shotPitch: 1
-    reloadClip: {fileID: 8300000, guid: fea98de8d2eb97544862df455c75ad0f, type: 3}
-    reloadVolume: 1
-    reloadPitch: 2
-  - type: 3
-    displayName: Bazooka
-    unlocked: 1
-    magazineSize: 1
-    ammoInMagazine: 1
-    reloadTime: 2.5
-    reloadOneByOne: 0
-    fireInterval: 1
-    impactPower: 3
-    viewModel: {fileID: 5771290808003766873}
-    viewModelAnimator: {fileID: 337302263661462526}
-    reloadAnimatorController: {fileID: 9100000, guid: 1d733069e7a9475498200f623a8ed001, type: 2}
-    reloadAnimationState: BazookaReload
-    rocketVisual: {fileID: 0}
-    muzzleTransform: {fileID: 5385553076405706902}
-    muzzleFlashPrefab: {fileID: 0}
-    impactEffectPrefab: {fileID: 0}
-    shotClip: {fileID: 8300000, guid: 197e84e13ba2fc343a0961b1bb9a8643, type: 3}
-    shotVolume: 0.7
-    shotPitch: 1
-    reloadClip: {fileID: 8300000, guid: 60bb617472103c64bb0202b94bcd771b, type: 3}
-    reloadVolume: 1
-    reloadPitch: 1.5
   startWeaponIndex: 0
   gunPlace: {fileID: 2450379135684436138}
   aimCamera: {fileID: 2884546045553303299}
@@ -3006,7 +2937,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1487034965298304937
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3173,7 +3104,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2228302432255648551
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4307,7 +4238,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2450379135684436138
 Transform:
   m_ObjectHideFlags: 0
@@ -4421,7 +4352,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7728031239319735968
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5854,7 +5785,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Continue
+  m_text: Next Level
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5990,10 +5921,10 @@ RectTransform:
   - {fileID: 6179377328529363275}
   m_Father: {fileID: 7531193197630930703}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 125, y: -75}
-  m_SizeDelta: {x: 250, y: 150}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3046918530401238246
 CanvasRenderer:

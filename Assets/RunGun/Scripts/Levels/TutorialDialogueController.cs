@@ -55,6 +55,9 @@ namespace RunGun.Levels
         private bool _lineFullyVisible = true;
         private static TutorialDialogueController _activeDialogue;
 
+        public bool PlayOnStart => playOnStart;
+        public bool IsPlaying => _isPlaying;
+
         private void Awake()
         {
             if (autoFindPlayer)
@@ -108,6 +111,7 @@ namespace RunGun.Levels
             if (_activeDialogue != null && _activeDialogue != this)
                 _activeDialogue.EndDialogue();
 
+            ClearSpawnedPose();
             _activeDialogue = this;
             _isPlaying = true;
             _lineIndex = 0;
@@ -135,6 +139,30 @@ namespace RunGun.Levels
                 ClearSpawnedPose();
 
             CompleteTextReveal();
+        }
+
+        public void ResetDialogue()
+        {
+            if (_activeDialogue == this)
+            {
+                SetPlayerLocked(false);
+                _activeDialogue = null;
+            }
+
+            _isPlaying = false;
+            _lineIndex = 0;
+            _nextAdvanceTime = 0f;
+            _visibleCharacters = 0;
+            _characterRevealProgress = 0f;
+            _lineFullyVisible = true;
+            SetDialogueVisible(false);
+            ClearSpawnedPose();
+            CompleteTextReveal();
+        }
+
+        public void ResetForLevelRetry()
+        {
+            ResetDialogue();
         }
 
         private void HandleAdvancePressed()
@@ -258,6 +286,7 @@ namespace RunGun.Levels
             if (_spawnedPose == null)
                 return;
 
+            _spawnedPose.SetActive(false);
             Destroy(_spawnedPose);
             _spawnedPose = null;
         }

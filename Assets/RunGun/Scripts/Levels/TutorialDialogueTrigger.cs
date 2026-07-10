@@ -20,7 +20,22 @@ namespace RunGun.Levels
             triggerCollider.isTrigger = true;
         }
 
+        public void ResetTrigger()
+        {
+            _hasPlayed = false;
+        }
+
         private void OnTriggerEnter(Collider other)
+        {
+            TryPlayDialogue(other);
+        }
+
+        private void OnTriggerStay(Collider other)
+        {
+            TryPlayDialogue(other);
+        }
+
+        private void TryPlayDialogue(Collider other)
         {
             if (playOnce && _hasPlayed)
                 return;
@@ -36,6 +51,9 @@ namespace RunGun.Levels
                 Debug.LogWarning($"{nameof(TutorialDialogueTrigger)} on {name} has no dialogue controller assigned.", this);
                 return;
             }
+
+            if (dialogueController.IsPlaying)
+                return;
 
             _hasPlayed = true;
             dialogueController.StartDialogue();
