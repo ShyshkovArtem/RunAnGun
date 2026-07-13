@@ -46,13 +46,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RunGun.Levels.TutorialDialogueController
   lines:
   - speakerName: Blue Man
-    text: Good job! Now is the final part.
+    text: Good job! Now for the final part.
     speakerPosePrefab: {fileID: 2736272047063480907, guid: a6dce48185b1cf24fb9f542767adc9c2, type: 3}
   - speakerName: Blue Man
-    text: There are 3 platforms you need to overcome to get to the finish.
+    text: There are three platforms between you and the finish.
     speakerPosePrefab: {fileID: 2736272047063480907, guid: ca5a1075237da5545b10438e8106affd, type: 3}
   - speakerName: Blue Man
-    text: On the next level I will teach you how to use pistol. See you there!
+    text: In the next trial, I'll teach you how to use the pistol. See you there!
     speakerPosePrefab: {fileID: 2736272047063480907, guid: 9804a0ccb68c4404f9d2f5dce9c70874, type: 3}
   playOnStart: 0
   hidePoseOnEnd: 1

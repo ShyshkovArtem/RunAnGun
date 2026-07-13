@@ -54,7 +54,9 @@ namespace ElmanGameDevTools.PlayerAudio
             else
                 _currentAirTime = 0f;
 
-            bool shouldPlay = (_currentAirTime < _airTimeThreshold) && isMoving;
+            bool shouldPlay = !playerController.IsSliding
+                && (_currentAirTime < _airTimeThreshold)
+                && isMoving;
 
             if (shouldPlay)
                 PlaySteps();

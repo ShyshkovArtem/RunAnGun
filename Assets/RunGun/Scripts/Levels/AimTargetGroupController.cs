@@ -39,6 +39,8 @@ namespace RunGun.Levels
         [SerializeField] private MovingPlatform[] failWhenThesePlatformsFinish;
         [SerializeField] private MovingPlatform[] movingPlatformsToResetOnFail;
         [SerializeField] private bool failWhenPlayerRespawns = true;
+        [Tooltip("Allows a fall to reset the group after its targets were completed but before the player reached safety.")]
+        [SerializeField] private bool resetCompletedWhenPlayerRespawns;
         [SerializeField] private bool respawnPlayerOnFail = true;
         [SerializeField] private LevelPlayerSpawner playerSpawner;
         [SerializeField] private GameObject[] activateOnFail;
@@ -58,6 +60,9 @@ namespace RunGun.Levels
         public UnityEvent Failed => failed;
         public event Action GroupCompleted;
         public event Action GroupFailed;
+
+        private bool CanFailCurrentState => _state == ChallengeState.Running
+            || (_state == ChallengeState.Completed && resetCompletedWhenPlayerRespawns);
 
         private void Awake()
         {
@@ -135,7 +140,7 @@ namespace RunGun.Levels
 
         public void FailGroup()
         {
-            if (_state != ChallengeState.Running)
+            if (!CanFailCurrentState)
                 return;
 
             _state = ChallengeState.Idle;
@@ -244,7 +249,7 @@ namespace RunGun.Levels
 
         private void HandlePlayerRespawned()
         {
-            if (_state == ChallengeState.Running)
+            if (CanFailCurrentState)
                 FailGroup();
         }
 

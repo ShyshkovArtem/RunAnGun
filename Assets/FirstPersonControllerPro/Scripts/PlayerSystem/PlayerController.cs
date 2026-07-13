@@ -38,6 +38,7 @@ namespace ElmanGameDevTools.PlayerSystem
         [Header("EXTERNAL IMPULSES")]
         public float maxExternalHorizontalSpeed = 42f;
         public float groundedImpulseLiftThreshold = 0.5f;
+        public float groundedImpulseControlDelay = 0.1f;
 
         [Header("BUNNY HOP SETTINGS")]
         public float bunnyHopWindow = 0.12f;
@@ -138,6 +139,7 @@ namespace ElmanGameDevTools.PlayerSystem
         private Vector3 _horizontalVelocity;
         private Vector3 _slideVelocity;
         private float _timeSinceLanded = 999f;
+        private float _groundedImpulseControlTimer;
 
         private bool _isGrounded;
         private bool _wasGrounded;
@@ -208,6 +210,9 @@ namespace ElmanGameDevTools.PlayerSystem
             {
                 _horizontalVelocity += horizontalImpulse;
                 _horizontalVelocity = ClampHorizontalSpeed(_horizontalVelocity);
+
+                if (_isGrounded && horizontalImpulse.sqrMagnitude > 0.001f)
+                    _groundedImpulseControlTimer = Mathf.Max(_groundedImpulseControlTimer, groundedImpulseControlDelay);
             }
 
             if (impulse.y > 0f)
@@ -243,12 +248,14 @@ namespace ElmanGameDevTools.PlayerSystem
             _velocity = Vector3.zero;
             _horizontalVelocity = Vector3.zero;
             _slideVelocity = Vector3.zero;
+            _groundedImpulseControlTimer = 0f;
             _isSliding = false;
             _isCrouching = false;
             _isGrounded = false;
             StopSlideLoopSound();
             ClearInputState();
             _timeSinceLanded = 999f;
+            _groundedImpulseControlTimer = 0f;
             CurrentHorizontalSpeed = 0f;
             _currentMovementState = MovementState.Walking;
 
@@ -527,10 +534,13 @@ namespace ElmanGameDevTools.PlayerSystem
 
         private void HandleMovement()
         {
+            if (_groundedImpulseControlTimer > 0f)
+                _groundedImpulseControlTimer = Mathf.Max(0f, _groundedImpulseControlTimer - Time.deltaTime);
+
             Vector3 moveInput = transform.right * _moveInput.x + transform.forward * _moveInput.y;
             if (moveInput.magnitude > 1f) moveInput.Normalize();
 
-            if (_jumpPressedThisFrame && _isGrounded && !_isCrouching)
+            if (_jumpPressedThisFrame && _isGrounded)
             {
                 ApplyJumpTakeoffDirection(moveInput);
                 _velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
@@ -564,8 +574,16 @@ namespace ElmanGameDevTools.PlayerSystem
 
             if (_isGrounded)
             {
-                float acceleration = moveInput.sqrMagnitude > 0.001f ? groundAcceleration : groundDeceleration;
-                _horizontalVelocity = Vector3.MoveTowards(_horizontalVelocity, desiredVelocity, acceleration * Time.deltaTime);
+                if (_groundedImpulseControlTimer > 0f)
+                {
+                    PreserveRecentGroundImpulse(moveInput, desiredVelocity);
+                }
+                else
+                {
+                    float acceleration = moveInput.sqrMagnitude > 0.001f ? groundAcceleration : groundDeceleration;
+                    _horizontalVelocity = Vector3.MoveTowards(_horizontalVelocity, desiredVelocity, acceleration * Time.deltaTime);
+                }
+
                 ApplyMissedBunnyHopSpeedLoss();
                 ApplyGroundSlopeForces();
             }
@@ -575,6 +593,21 @@ namespace ElmanGameDevTools.PlayerSystem
             }
 
             MoveWithStepAssist(_horizontalVelocity * Time.deltaTime);
+        }
+
+        private void PreserveRecentGroundImpulse(Vector3 moveInput, Vector3 desiredVelocity)
+        {
+            if (moveInput.sqrMagnitude < 0.001f || _horizontalVelocity.sqrMagnitude < 0.001f)
+                return;
+
+            float currentSpeed = _horizontalVelocity.magnitude;
+            float targetSpeed = Mathf.Max(currentSpeed, desiredVelocity.magnitude);
+            Vector3 steeredDirection = Vector3.RotateTowards(
+                _horizontalVelocity / currentSpeed,
+                desiredVelocity.normalized,
+                groundAcceleration * Time.deltaTime / Mathf.Max(1f, currentSpeed),
+                0f);
+            _horizontalVelocity = steeredDirection.normalized * targetSpeed;
         }
 
         private void MoveWithStepAssist(Vector3 horizontalDisplacement)
@@ -822,7 +855,10 @@ namespace ElmanGameDevTools.PlayerSystem
                 float downhillAlignment = Vector3.Dot(_slideVelocity.normalized, downhillDirection);
                 if (downhillAlignment > 0f)
                 {
-                    _slideVelocity += downhillDirection * (downhillAcceleration * downhillAlignment * Time.deltaTime);
+                    float slopeAngle = Vector3.Angle(_groundNormal, Vector3.up);
+                    float slopeAccelerationScale = Mathf.Sin(slopeAngle * Mathf.Deg2Rad);
+                    float acceleration = downhillAcceleration * slopeAccelerationScale * downhillAlignment;
+                    _slideVelocity += downhillDirection * (acceleration * Time.deltaTime);
                     _slideVelocity = ClampHorizontalSpeed(_slideVelocity, maxSlideSpeed);
                 }
             }
@@ -830,8 +866,17 @@ namespace ElmanGameDevTools.PlayerSystem
             if (steeringInput.sqrMagnitude > 0.001f)
             {
                 Vector3 targetDirection = Vector3.ProjectOnPlane(steeringInput, _groundNormal).normalized;
-                Vector3 targetVelocity = targetDirection * _slideVelocity.magnitude;
-                _slideVelocity = Vector3.MoveTowards(_slideVelocity, targetVelocity, slideSteering * _slideVelocity.magnitude * Time.deltaTime);
+                float slideSpeed = _slideVelocity.magnitude;
+                if (targetDirection.sqrMagnitude > 0.001f && slideSpeed > 0.001f)
+                {
+                    Vector3 currentDirection = _slideVelocity / slideSpeed;
+                    Vector3 steeredDirection = Vector3.RotateTowards(
+                        currentDirection,
+                        targetDirection,
+                        slideSteering * Time.deltaTime,
+                        0f);
+                    _slideVelocity = steeredDirection.normalized * slideSpeed;
+                }
             }
 
             _slideVelocity = Vector3.ProjectOnPlane(_slideVelocity, _groundNormal);

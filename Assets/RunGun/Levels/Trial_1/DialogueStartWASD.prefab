@@ -46,14 +46,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RunGun.Levels.TutorialDialogueController
   lines:
   - speakerName: Blue Man
-    text: Hello buddy! Let me quickly bring up you to date.
+    text: Hey, buddy! Let me quickly bring you up to speed.
     speakerPosePrefab: {fileID: 2736272047063480907, guid: a6dce48185b1cf24fb9f542767adc9c2, type: 3}
   - speakerName: Blue Man
-    text: We will start with simple movement. Use WASD to walk around and SPACE to
-      jump.
+    text: We'll start with basic movement. Use WASD to move and SPACE to jump.
     speakerPosePrefab: {fileID: 2736272047063480907, guid: a6dce48185b1cf24fb9f542767adc9c2, type: 3}
   - speakerName: Blue Man
-    text: We will continue when you get to the next platform. See you there!
+    text: Once you reach the next platform, we'll continue. See you there!
     speakerPosePrefab: {fileID: 2736272047063480907, guid: ca5a1075237da5545b10438e8106affd, type: 3}
   playOnStart: 1
   hidePoseOnEnd: 1

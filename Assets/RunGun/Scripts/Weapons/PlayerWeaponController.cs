@@ -99,6 +99,7 @@ namespace RunGun.Weapons
         [SerializeField] private float bulletHoleLifetime = 6f;
         [SerializeField] private float bulletHoleSurfaceOffset = 0.01f;
         [SerializeField] private Color bulletHoleColor = new(0.03f, 0.03f, 0.03f, 0.9f);
+        [SerializeField] private Material bulletHoleMaterialTemplate;
         [SerializeField] private float pistolBulletHoleSize = 0.08f;
         [SerializeField] private float rifleBulletHoleSize = 0.07f;
         [SerializeField] private float shotgunPelletHoleSize = 0.055f;
@@ -1273,11 +1274,13 @@ namespace RunGun.Weapons
                 return _bulletHoleMaterial;
             }
 
-            Shader shader = Shader.Find("Universal Render Pipeline/Unlit")
-                ?? Shader.Find("Unlit/Color")
-                ?? Shader.Find("Standard");
+            if (bulletHoleMaterialTemplate == null)
+            {
+                Debug.LogError("Bullet hole material is not assigned.", this);
+                return null;
+            }
 
-            _bulletHoleMaterial = new Material(shader)
+            _bulletHoleMaterial = new Material(bulletHoleMaterialTemplate)
             {
                 name = "Runtime Bullet Hole",
                 color = bulletHoleColor

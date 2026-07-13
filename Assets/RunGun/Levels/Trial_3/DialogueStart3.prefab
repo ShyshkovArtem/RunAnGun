@@ -46,14 +46,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RunGun.Levels.TutorialDialogueController
   lines:
   - speakerName: Blue Guy
-    text: Hello! You may already mention that pistol has impulse while shooting.
+    text: Hello! You may have already noticed that the pistol pushes you when you fire.
     speakerPosePrefab: {fileID: 2736272047063480907, guid: 9804a0ccb68c4404f9d2f5dce9c70874, type: 3}
   - speakerName: Blue Guy
-    text: That is true for every gun in the game, but of course they have some differeces.
+    text: Every weapon can affect your movement, but each one applies a different
+      amount of force.
     speakerPosePrefab: {fileID: 2736272047063480907, guid: a6dce48185b1cf24fb9f542767adc9c2, type: 3}
   - speakerName: Blue Guy
-    text: On this level you will learn how to use shotgun for movement! First try
-      to shoot under you and jump.
+    text: In this trial, you'll learn to use the shotgun for movement. First, try
+      jumping and shooting the ground beneath you.
     speakerPosePrefab: {fileID: 2736272047063480907, guid: 9804a0ccb68c4404f9d2f5dce9c70874, type: 3}
   playOnStart: 1
   hidePoseOnEnd: 1

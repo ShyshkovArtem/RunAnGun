@@ -138,7 +138,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5383332717273741120
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1656,7 +1656,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7531193197630930703
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2255,6 +2255,7 @@ MonoBehaviour:
   stepAssistClearance: 0.03
   maxExternalHorizontalSpeed: 42
   groundedImpulseLiftThreshold: 0.5
+  groundedImpulseControlDelay: 0.1
   bunnyHopWindow: 0.12
   airControl: 0.75
   airStrafeAcceleration: 14
@@ -2264,7 +2265,7 @@ MonoBehaviour:
   maxLookUpAngle: 90
   maxLookDownAngle: -90
   useCameraSmoothing: 0
-  enableHeadBob: 0
+  enableHeadBob: 1
   requireCursorLockForLook: 1
   showInputDebug: 1
   bobAmountX: 0.04
@@ -2274,12 +2275,12 @@ MonoBehaviour:
   crouchBobFrequency: 8
   bobSmoothness: 10
   cameraWeight: 25
-  enableCameraTilt: 0
+  enableCameraTilt: 1
   tiltAmount: 1
   tiltSmoothness: 8
   runTiltMultiplier: 1.2
   crouchTiltMultiplier: 0.5
-  turnTiltAmount: 2.5
+  turnTiltAmount: 1
   maxTotalTilt: 5
   movementAudioSource: {fileID: 5026124752720878270}
   slideAudioSource: {fileID: 5026124752720878270}
@@ -2574,7 +2575,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2937952180854084144}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 627611b132969fa4ea342d851c8adae3, type: 3}
   m_Name: 
@@ -2582,7 +2583,7 @@ MonoBehaviour:
   weapons:
   - type: 0
     displayName: Pistol
-    unlocked: 1
+    unlocked: 0
     magazineSize: 6
     ammoInMagazine: 6
     reloadTime: 1
@@ -2596,7 +2597,7 @@ MonoBehaviour:
     rocketVisual: {fileID: 0}
     muzzleTransform: {fileID: 2649705877146455851}
     muzzleFlashPrefab: {fileID: 0}
-    impactEffectPrefab: {fileID: 0}
+    impactEffectPrefab: {fileID: 100006, guid: 94a130fb17f1cae4388a8fe1d8bd3055, type: 3}
     shotClip: {fileID: 8300000, guid: ed23e02cdc0895a4dafc819d3d1b4557, type: 3}
     shotVolume: 1
     shotPitch: 1
@@ -2605,7 +2606,7 @@ MonoBehaviour:
     reloadPitch: 2
   - type: 1
     displayName: Shotgun
-    unlocked: 1
+    unlocked: 0
     magazineSize: 5
     ammoInMagazine: 5
     reloadTime: 0.9
@@ -2619,7 +2620,7 @@ MonoBehaviour:
     rocketVisual: {fileID: 0}
     muzzleTransform: {fileID: 1934887335781020186}
     muzzleFlashPrefab: {fileID: 0}
-    impactEffectPrefab: {fileID: 0}
+    impactEffectPrefab: {fileID: 100006, guid: 94a130fb17f1cae4388a8fe1d8bd3055, type: 3}
     shotClip: {fileID: 8300000, guid: 5f315947baa643643b0dbb6ff24511cc, type: 3}
     shotVolume: 0.2
     shotPitch: 1
@@ -2642,7 +2643,7 @@ MonoBehaviour:
     rocketVisual: {fileID: 0}
     muzzleTransform: {fileID: 7206631601592288530}
     muzzleFlashPrefab: {fileID: 0}
-    impactEffectPrefab: {fileID: 0}
+    impactEffectPrefab: {fileID: 100006, guid: 94a130fb17f1cae4388a8fe1d8bd3055, type: 3}
     shotClip: {fileID: 8300000, guid: c808163b8b9618447ac679aeac111838, type: 3}
     shotVolume: 1
     shotPitch: 1
@@ -2651,7 +2652,7 @@ MonoBehaviour:
     reloadPitch: 2
   - type: 3
     displayName: Bazooka
-    unlocked: 1
+    unlocked: 0
     magazineSize: 1
     ammoInMagazine: 1
     reloadTime: 2.5
@@ -2665,14 +2666,14 @@ MonoBehaviour:
     rocketVisual: {fileID: 0}
     muzzleTransform: {fileID: 5385553076405706902}
     muzzleFlashPrefab: {fileID: 0}
-    impactEffectPrefab: {fileID: 0}
+    impactEffectPrefab: {fileID: 100006, guid: 94a130fb17f1cae4388a8fe1d8bd3055, type: 3}
     shotClip: {fileID: 8300000, guid: 197e84e13ba2fc343a0961b1bb9a8643, type: 3}
     shotVolume: 0.7
     shotPitch: 1
     reloadClip: {fileID: 8300000, guid: 60bb617472103c64bb0202b94bcd771b, type: 3}
     reloadVolume: 1
     reloadPitch: 1.5
-  startWeaponIndex: 0
+  startWeaponIndex: 2
   gunPlace: {fileID: 2450379135684436138}
   aimCamera: {fileID: 2884546045553303299}
   movementController: {fileID: 694847209161167879}
@@ -2695,8 +2696,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   rayOriginForwardOffset: 0.25
-  pistolImpulse: 3.75
-  rifleImpulse: 1.2
+  pistolImpulse: 2
+  rifleImpulse: 0.9
   shotgunImpulse: 18
   shotgunMissImpulse: 3.5
   shotgunImpactDistance: 8
@@ -2717,6 +2718,7 @@ MonoBehaviour:
   bulletHoleLifetime: 6
   bulletHoleSurfaceOffset: 0.01
   bulletHoleColor: {r: 0.03, g: 0.03, b: 0.03, a: 0.8235294}
+  bulletHoleMaterialTemplate: {fileID: 2100000, guid: f29d176bd0914ebdbe3f7f8ad451ce51, type: 2}
   pistolBulletHoleSize: 0.08
   rifleBulletHoleSize: 0.07
   shotgunPelletHoleSize: 0.055
@@ -3173,7 +3175,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2228302432255648551
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3190,10 +3192,10 @@ RectTransform:
   - {fileID: 4177074109846597962}
   m_Father: {fileID: 7531193197630930703}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 125, y: -375}
-  m_SizeDelta: {x: 250, y: 150}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &361361459031136138
 CanvasRenderer:
@@ -4307,7 +4309,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2450379135684436138
 Transform:
   m_ObjectHideFlags: 0
@@ -4438,10 +4440,10 @@ RectTransform:
   - {fileID: 3735932398256732592}
   m_Father: {fileID: 7531193197630930703}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 125, y: -225}
-  m_SizeDelta: {x: 250, y: 150}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -75}
+  m_SizeDelta: {x: 0, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4854040087959302078
 CanvasRenderer:
@@ -5973,7 +5975,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4415470347605100818
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5990,10 +5992,10 @@ RectTransform:
   - {fileID: 6179377328529363275}
   m_Father: {fileID: 7531193197630930703}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 125, y: -75}
+  m_SizeDelta: {x: 250, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3046918530401238246
 CanvasRenderer:

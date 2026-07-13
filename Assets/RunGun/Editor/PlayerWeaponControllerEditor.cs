@@ -70,6 +70,7 @@ public sealed class PlayerWeaponControllerEditor : Editor
         "bulletHoleLifetime",
         "bulletHoleSurfaceOffset",
         "bulletHoleColor",
+        "bulletHoleMaterialTemplate",
         "pistolBulletHoleSize",
         "rifleBulletHoleSize",
         "shotgunPelletHoleSize",

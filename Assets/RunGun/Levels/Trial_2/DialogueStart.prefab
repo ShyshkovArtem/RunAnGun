@@ -46,10 +46,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RunGun.Levels.TutorialDialogueController
   lines:
   - speakerName: Blue Guy
-    text: Nice to see you here! Today you will learn how to use first of 4 weapons.
+    text: Nice to see you here! Today you'll learn how to use the first of four weapons.
     speakerPosePrefab: {fileID: 7654791619888061114, guid: 1336c22a2ea74af42961e46ed56d15ae, type: 3}
   - speakerName: Blue Guy
-    text: Shoot this 6 targets and get to the next platform!
+    text: Shoot these six targets to activate the next platform!
     speakerPosePrefab: {fileID: 2736272047063480907, guid: ca5a1075237da5545b10438e8106affd, type: 3}
   playOnStart: 1
   hidePoseOnEnd: 1

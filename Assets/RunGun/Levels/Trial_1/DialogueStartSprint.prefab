@@ -46,14 +46,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RunGun.Levels.TutorialDialogueController
   lines:
   - speakerName: Blue Man
-    text: Nice, you are here!
+    text: Nice, you made it!
     speakerPosePrefab: {fileID: 2736272047063480907, guid: a6dce48185b1cf24fb9f542767adc9c2, type: 3}
   - speakerName: Blue Man
-    text: Next step is sprint. Hold SHIFT to sprint and gain more speed
+    text: Next up is sprinting. Hold SHIFT while moving to sprint and gain more speed.
     speakerPosePrefab: {fileID: 2736272047063480907, guid: 9804a0ccb68c4404f9d2f5dce9c70874, type: 3}
   - speakerName: Blue Man
-    text: See this platofrm? You will need to use sprint jump to go over it! Good
-      luck!
+    text: See this platform? You'll need a sprint jump to get across. Good luck!
     speakerPosePrefab: {fileID: 2736272047063480907, guid: ca5a1075237da5545b10438e8106affd, type: 3}
   playOnStart: 0
   hidePoseOnEnd: 1
