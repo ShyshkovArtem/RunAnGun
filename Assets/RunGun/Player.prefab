@@ -2701,7 +2701,7 @@ MonoBehaviour:
   shotgunImpulse: 18
   shotgunMissImpulse: 3.5
   shotgunImpactDistance: 8
-  bazookaImpulse: 30
+  bazookaImpulse: 26
   bazookaMissImpulse: 8
   bazookaImpactDistance: 80
   bazookaRadius: 6

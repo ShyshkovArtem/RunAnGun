@@ -20,6 +20,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/RunGun/Levels/Trial_4/Trial_4.unity
     guid: 9128f30407006604a9e50e84309ea302
+  - enabled: 1
+    path: Assets/RunGun/Levels/Trial_5/Trial_5.unity
+    guid: 9a48d5693097f2d4eaf189f8334d88ae
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

@@ -78,7 +78,7 @@ namespace RunGun.Weapons
         [SerializeField] private float shotgunImpulse = 18f;
         [SerializeField] private float shotgunMissImpulse = 3.5f;
         [SerializeField] private float shotgunImpactDistance = 8f;
-        [SerializeField] private float bazookaImpulse = 30f;
+        [SerializeField] private float bazookaImpulse = 26f;
         [SerializeField] private float bazookaMissImpulse = 8f;
         [SerializeField] private float bazookaImpactDistance = 80f;
         [SerializeField] private float bazookaRadius = 6f;
@@ -366,7 +366,6 @@ namespace RunGun.Weapons
             GetAimRay(out Vector3 rayOrigin, out Vector3 aimDirection);
             bool hasHit = TryRaycastWeapon(weapon.type, rayOrigin, aimDirection, out RaycastHit hit);
             SpawnMuzzleFlash(weapon, aimDirection);
-            NotifyWeaponHit(weapon, hasHit, hit);
 
             if (weapon.type == WeaponType.Bazooka)
             {
@@ -375,6 +374,7 @@ namespace RunGun.Weapons
                 return;
             }
 
+            NotifyWeaponHit(weapon, hasHit, hit);
             SpawnImpactEffect(weapon, hasHit, hit);
             SpawnBulletHole(weapon, hasHit, hit);
             ApplyMovementImpact(weapon, rayOrigin, aimDirection, hasHit, hit);
@@ -945,6 +945,7 @@ namespace RunGun.Weapons
             var rocketVisual = EnsureRocketVisual(weapon);
             if (rocketVisual == null)
             {
+                NotifyWeaponHit(weapon, hasHit, hit);
                 SpawnImpactEffect(weapon, hasHit, hit);
                 SpawnBulletHole(weapon, hasHit, hit);
                 ApplyMovementImpact(weapon, rayOrigin, aimDirection, hasHit, hit);
@@ -1017,6 +1018,7 @@ namespace RunGun.Weapons
                 RestoreRocketVisual(rocketVisual, false);
             }
 
+            NotifyWeaponHit(weapon, hasHit, hit);
             SpawnImpactEffect(weapon, hasHit, hit);
             SpawnBulletHole(weapon, hasHit, hit);
             ApplyMovementImpact(weapon, rayOrigin, aimDirection, hasHit, hit);

@@ -279,6 +279,10 @@ namespace RunGun.Levels
             for (int i = 0; i < movingPlatforms.Count; i++)
                 movingPlatforms[i].ResetForLevelRetry();
 
+            var breakables = FindSceneComponents<WeaponBreakable>();
+            for (int i = 0; i < breakables.Count; i++)
+                breakables[i].ResetBreakable();
+
             var dialogueControllers = FindSceneComponents<TutorialDialogueController>();
             for (int i = 0; i < dialogueControllers.Count; i++)
                 dialogueControllers[i].ResetForLevelRetry();
