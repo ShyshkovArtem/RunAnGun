@@ -43,6 +43,7 @@ namespace RunGun.Levels
         [SerializeField] private PlayerController playerController;
         [SerializeField] private PlayerWeaponController weaponController;
         [SerializeField] private LevelPlayerSpawner playerSpawner;
+        [SerializeField] private LevelRunTimer runTimer;
 
         private bool _completed;
         private bool _paused;
@@ -88,6 +89,8 @@ namespace RunGun.Levels
                 return;
 
             SetPaused(false);
+            FindRunTimer();
+            runTimer?.FinishRun();
             _completed = true;
 
             if (autoFindPlayer && (playerController == null || weaponController == null))
@@ -259,6 +262,13 @@ namespace RunGun.Levels
 
         private void ResetLevelSystems()
         {
+            FindRunTimer();
+            runTimer?.ResetRun();
+
+            var runStartTriggers = FindSceneComponents<LevelRunStartTrigger>();
+            for (int i = 0; i < runStartTriggers.Count; i++)
+                runStartTriggers[i].ResetTrigger();
+
             var checkpoints = FindSceneComponents<LevelCheckpoint>();
             for (int i = 0; i < checkpoints.Count; i++)
                 checkpoints[i].ResetCheckpoint();
@@ -318,6 +328,12 @@ namespace RunGun.Levels
             if (trialPausePanel != null)
                 trialPausePanel.SetActive(_paused);
 
+            if (_paused)
+            {
+                FindRunTimer();
+                runTimer?.RefreshPauseUi();
+            }
+
             Time.timeScale = _paused ? 0f : 1f;
             Cursor.lockState = _paused ? CursorLockMode.None : CursorLockMode.Locked;
             Cursor.visible = _paused;
@@ -342,6 +358,12 @@ namespace RunGun.Levels
 
             if (playerSpawner == null)
                 playerSpawner = FindFirstObjectByType<LevelPlayerSpawner>();
+        }
+
+        private void FindRunTimer()
+        {
+            if (runTimer == null)
+                runTimer = FindFirstObjectByType<LevelRunTimer>();
         }
 
         private void CacheLevelTexts()
