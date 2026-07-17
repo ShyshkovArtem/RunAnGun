@@ -1,6 +1,7 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace RunGun.Levels
@@ -21,36 +22,63 @@ namespace RunGun.Levels
         {
             [SerializeField] private string displayName;
             [SerializeField] private Sprite icon;
+            [SerializeField] private Color textColor;
             [Min(0f)] [SerializeField] private float maximumTime;
 
             public string DisplayName => string.IsNullOrWhiteSpace(displayName) ? "Rank" : displayName;
             public Sprite Icon => icon;
+            public Color TextColor => textColor;
             public float MaximumTime => maximumTime;
 
-            public RankDefinition(string name, float time)
+            public RankDefinition(string name, float time, Color color)
             {
                 displayName = name;
                 maximumTime = time;
+                textColor = color;
             }
 
             public void SetMinimumTime(float minimum)
             {
                 maximumTime = Mathf.Max(minimum, maximumTime);
             }
+
+            public void SetIconIfMissing(Sprite fallback)
+            {
+                if (icon == null)
+                    icon = fallback;
+            }
+
+            public void SetColorIfMissing(Color fallback)
+            {
+                if (textColor.a <= 0f)
+                    textColor = fallback;
+            }
         }
 
         [Serializable]
         private sealed class RequirementRow
         {
-            [SerializeField] private TMP_Text text;
+            [SerializeField] private TMP_Text nameText;
+            [FormerlySerializedAs("text")]
+            [SerializeField] private TMP_Text requirementText;
             [SerializeField] private Image icon;
+
+            public Sprite Icon => icon != null ? icon.sprite : null;
+
+            public void AutoBind(Transform root, string rankName)
+            {
+                BindIfMissing(ref nameText, root, rankName + "Txt");
+                BindIfMissing(ref requirementText, root, rankName + "TimerTxt");
+                BindIfMissing(ref icon, root, rankName + "Icon");
+            }
 
             public void Show(RankDefinition rank, string requirement)
             {
-                if (text != null)
-                    text.text = $"{rank.DisplayName}  {requirement}";
+                SetText(nameText, rank.DisplayName);
+                SetText(requirementText, requirement);
 
-                SetIcon(icon, rank.Icon);
+                if (rank.Icon != null)
+                    SetIcon(icon, rank.Icon);
             }
         }
 
@@ -61,6 +89,22 @@ namespace RunGun.Levels
             [SerializeField] private RequirementRow gold = new();
             [SerializeField] private RequirementRow silver = new();
             [SerializeField] private RequirementRow bronze = new();
+
+            public void AutoBind(Transform root)
+            {
+                impossible.AutoBind(root, "Impossible");
+                gold.AutoBind(root, "Gold");
+                silver.AutoBind(root, "Silver");
+                bronze.AutoBind(root, "Bronze");
+            }
+
+            public void ApplyIcons(LevelRunTimer timer)
+            {
+                timer.impossibleRank.SetIconIfMissing(impossible.Icon);
+                timer.goldRank.SetIconIfMissing(gold.Icon);
+                timer.silverRank.SetIconIfMissing(silver.Icon);
+                timer.bronzeRank.SetIconIfMissing(bronze.Icon);
+            }
 
             public void Show(LevelRunTimer timer)
             {
@@ -79,6 +123,19 @@ namespace RunGun.Levels
             [SerializeField] private Image bestRankIcon;
             [SerializeField] private RequirementsView requirements = new();
 
+            public void AutoBind(Transform root)
+            {
+                BindIfMissing(ref bestTimeText, root, "BestTimerTxt");
+                BindIfMissing(ref bestRankText, root, "BestRankTxt");
+                BindIfMissing(ref bestRankIcon, root, "BestRankIcon");
+                requirements.AutoBind(root);
+            }
+
+            public void ApplyIcons(LevelRunTimer timer)
+            {
+                requirements.ApplyIcons(timer);
+            }
+
             public void Show(LevelRunTimer timer)
             {
                 requirements.Show(timer);
@@ -94,6 +151,7 @@ namespace RunGun.Levels
                 RankDefinition rank = timer.GetRank(timer._bestTime);
                 SetText(bestTimeText, FormatTime(timer._bestTime));
                 SetText(bestRankText, rank.DisplayName);
+                SetTextColor(bestRankText, rank.TextColor);
                 SetIcon(bestRankIcon, rank.Icon);
             }
         }
@@ -109,6 +167,33 @@ namespace RunGun.Levels
             [SerializeField] private Image bestRankIcon;
             [SerializeField] private GameObject newRecordIndicator;
             [SerializeField] private RequirementsView requirements = new();
+
+            public void AutoBind(Transform root)
+            {
+                BindIfMissing(ref attemptTimeText, root, "YourTimerTxt");
+                BindIfMissing(ref attemptRankText, root, "TimerRankTxt");
+                BindIfMissing(ref attemptRankIcon, root, "TimerRankIcon");
+                BindIfMissing(ref bestTimeText, root, "YourBestTimerTxt");
+                BindIfMissing(ref bestRankText, root, "BestRankTxt");
+                BindIfMissing(ref bestRankIcon, root, "BestRankIcon");
+
+                if (newRecordIndicator == null)
+                {
+                    Transform indicator = FindChildRecursive(root, "NewRecordBorder");
+                    if (indicator == null)
+                        indicator = FindChildRecursive(root, "NewRecordTxt");
+
+                    if (indicator != null)
+                        newRecordIndicator = indicator.gameObject;
+                }
+
+                requirements.AutoBind(root);
+            }
+
+            public void ApplyIcons(LevelRunTimer timer)
+            {
+                requirements.ApplyIcons(timer);
+            }
 
             public void Show(LevelRunTimer timer)
             {
@@ -148,16 +233,19 @@ namespace RunGun.Levels
         }
 
         private const string BestTimeKeyPrefix = "RunGun.BestTime.";
+        private const string PausePanelName = "TrialPausePanel";
+        private const string FinalPanelName = "FinalPanel";
+        private const string LegacyFinalPanelName = "TrialFinalPanel";
 
         [Header("Save Identity")]
         [Tooltip("Unique and permanent ID used to save this level's best time, for example FinalTrial or Level01.")]
         [SerializeField] private string levelId;
 
         [Header("Ranks (Fastest To Slowest)")]
-        [SerializeField] private RankDefinition impossibleRank = new("Impossible", 30f);
-        [SerializeField] private RankDefinition goldRank = new("Gold", 45f);
-        [SerializeField] private RankDefinition silverRank = new("Silver", 60f);
-        [SerializeField] private RankDefinition bronzeRank = new("Bronze", 0f);
+        [SerializeField] private RankDefinition impossibleRank = new("Impossible", 30f, new Color32(255, 52, 52, 255));
+        [SerializeField] private RankDefinition goldRank = new("Gold", 45f, new Color32(255, 214, 66, 255));
+        [SerializeField] private RankDefinition silverRank = new("Silver", 60f, new Color32(217, 224, 231, 255));
+        [SerializeField] private RankDefinition bronzeRank = new("Bronze", 0f, new Color32(215, 122, 50, 255));
 
         [Header("Live UI")]
         [SerializeField] private TMP_Text gameplayTimerText;
@@ -185,6 +273,9 @@ namespace RunGun.Levels
 
         private void Awake()
         {
+            EnsureRankColors();
+            AutoBindUi();
+
             LoadBestTime();
             ResetRun();
         }
@@ -203,6 +294,7 @@ namespace RunGun.Levels
             impossibleRank.SetMinimumTime(0f);
             goldRank.SetMinimumTime(impossibleRank.MaximumTime);
             silverRank.SetMinimumTime(goldRank.MaximumTime);
+            EnsureRankColors();
         }
 
         public void StartRun()
@@ -260,6 +352,38 @@ namespace RunGun.Levels
             SetText(gameplayTimerText, FormatTime(_elapsedTime));
         }
 
+        private void EnsureRankColors()
+        {
+            impossibleRank.SetColorIfMissing(new Color32(255, 52, 52, 255));
+            goldRank.SetColorIfMissing(new Color32(255, 214, 66, 255));
+            silverRank.SetColorIfMissing(new Color32(217, 224, 231, 255));
+            bronzeRank.SetColorIfMissing(new Color32(215, 122, 50, 255));
+        }
+
+        private void AutoBindUi()
+        {
+            if (gameplayTimerText == null)
+            {
+                Transform timer = FindSceneTransformByName("Timer");
+                if (timer != null)
+                    gameplayTimerText = timer.GetComponent<TMP_Text>();
+            }
+
+            Transform pausePanel = FindSceneTransformByName(PausePanelName);
+            if (pausePanel != null)
+                pauseView.AutoBind(pausePanel);
+
+            Transform finalPanel = FindSceneTransformByName(FinalPanelName);
+            if (finalPanel == null)
+                finalPanel = FindSceneTransformByName(LegacyFinalPanelName);
+
+            if (finalPanel != null)
+                finalView.AutoBind(finalPanel);
+
+            pauseView.ApplyIcons(this);
+            finalView.ApplyIcons(this);
+        }
+
         private RankDefinition GetRank(float time)
         {
             if (time <= impossibleRank.MaximumTime)
@@ -314,6 +438,12 @@ namespace RunGun.Levels
                 target.text = value;
         }
 
+        private static void SetTextColor(TMP_Text target, Color color)
+        {
+            if (target != null)
+                target.color = color;
+        }
+
         private static void SetIcon(Image target, Sprite sprite)
         {
             if (target == null)
@@ -321,6 +451,50 @@ namespace RunGun.Levels
 
             target.sprite = sprite;
             target.enabled = sprite != null;
+        }
+
+        private static void BindIfMissing<T>(ref T target, Transform root, string childName) where T : Component
+        {
+            if (target != null || root == null)
+                return;
+
+            Transform child = FindChildRecursive(root, childName);
+            if (child != null)
+                target = child.GetComponent<T>();
+        }
+
+        private static Transform FindSceneTransformByName(string objectName)
+        {
+            var transforms = Resources.FindObjectsOfTypeAll<Transform>();
+            for (int i = 0; i < transforms.Length; i++)
+            {
+                Transform candidate = transforms[i];
+                if (candidate == null || candidate.name != objectName)
+                    continue;
+
+                if (candidate.gameObject.scene.IsValid())
+                    return candidate;
+            }
+
+            return null;
+        }
+
+        private static Transform FindChildRecursive(Transform root, string childName)
+        {
+            if (root == null)
+                return null;
+
+            if (root.name == childName)
+                return root;
+
+            for (int i = 0; i < root.childCount; i++)
+            {
+                Transform found = FindChildRecursive(root.GetChild(i), childName);
+                if (found != null)
+                    return found;
+            }
+
+            return null;
         }
     }
 }

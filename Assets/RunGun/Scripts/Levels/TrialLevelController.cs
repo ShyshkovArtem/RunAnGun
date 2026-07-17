@@ -13,7 +13,8 @@ namespace RunGun.Levels
     [AddComponentMenu("RunGun/Levels/Trial Level Controller")]
     public sealed class TrialLevelController : MonoBehaviour
     {
-        private const string FinalPanelName = "TrialFinalPanel";
+        private const string FinalPanelName = "FinalPanel";
+        private const string LegacyFinalPanelName = "TrialFinalPanel";
         private const string PausePanelName = "TrialPausePanel";
         private const string LevelTextName = "LevelTxt";
         private const string LegacyLevelTextName = "Leveltxt";
@@ -188,6 +189,9 @@ namespace RunGun.Levels
         {
             if (trialFinalPanel == null)
                 trialFinalPanel = FindSceneObjectByName(FinalPanelName);
+
+            if (trialFinalPanel == null)
+                trialFinalPanel = FindSceneObjectByName(LegacyFinalPanelName);
 
             if (trialPausePanel == null)
                 trialPausePanel = FindSceneObjectByName(PausePanelName);
