@@ -19,44 +19,6 @@ namespace RunGun.Levels
         }
 
         [Serializable]
-        private sealed class RankDefinition
-        {
-            [SerializeField] private string displayName;
-            [SerializeField] private Sprite icon;
-            [SerializeField] private Color textColor;
-            [Min(0f)] [SerializeField] private float maximumTime;
-
-            public string DisplayName => string.IsNullOrWhiteSpace(displayName) ? "Rank" : displayName;
-            public Sprite Icon => icon;
-            public Color TextColor => textColor;
-            public float MaximumTime => maximumTime;
-
-            public RankDefinition(string name, float time, Color color)
-            {
-                displayName = name;
-                maximumTime = time;
-                textColor = color;
-            }
-
-            public void SetMinimumTime(float minimum)
-            {
-                maximumTime = Mathf.Max(minimum, maximumTime);
-            }
-
-            public void SetIconIfMissing(Sprite fallback)
-            {
-                if (icon == null)
-                    icon = fallback;
-            }
-
-            public void SetColorIfMissing(Color fallback)
-            {
-                if (textColor.a <= 0f)
-                    textColor = fallback;
-            }
-        }
-
-        [Serializable]
         private sealed class RequirementRow
         {
             [SerializeField] private TMP_Text nameText;
@@ -73,7 +35,7 @@ namespace RunGun.Levels
                 BindIfMissing(ref icon, root, rankName + "Icon");
             }
 
-            public void Show(RankDefinition rank, string requirement)
+            public void Show(LevelTimingDefinition.RankDefinition rank, string requirement)
             {
                 SetText(nameText, rank.DisplayName);
                 SetText(requirementText, requirement);
@@ -149,7 +111,7 @@ namespace RunGun.Levels
                     return;
                 }
 
-                RankDefinition rank = timer.GetRank(timer._bestTime);
+                LevelTimingDefinition.RankDefinition rank = timer.GetRank(timer._bestTime);
                 SetText(bestTimeText, FormatTime(timer._bestTime));
                 SetText(bestRankText, rank.DisplayName);
                 SetTextColor(bestRankText, rank.TextColor);
@@ -202,7 +164,7 @@ namespace RunGun.Levels
 
                 if (timer._hasFinishedAttempt)
                 {
-                    RankDefinition attemptRank = timer.GetRank(timer._elapsedTime);
+                    LevelTimingDefinition.RankDefinition attemptRank = timer.GetRank(timer._elapsedTime);
                     SetText(attemptTimeText, FormatTime(timer._elapsedTime));
                     SetText(attemptRankText, attemptRank.DisplayName);
                     SetIcon(attemptRankIcon, attemptRank.Icon);
@@ -216,7 +178,7 @@ namespace RunGun.Levels
 
                 if (timer._hasBestTime)
                 {
-                    RankDefinition bestRank = timer.GetRank(timer._bestTime);
+                    LevelTimingDefinition.RankDefinition bestRank = timer.GetRank(timer._bestTime);
                     SetText(bestTimeText, FormatTime(timer._bestTime));
                     SetText(bestRankText, bestRank.DisplayName);
                     SetIcon(bestRankIcon, bestRank.Icon);
@@ -240,12 +202,14 @@ namespace RunGun.Levels
         [Header("Save Identity")]
         [Tooltip("Unique and permanent ID used to save this level's best time, for example FinalTrial or Level01.")]
         [SerializeField] private string levelId;
+        [Tooltip("Shared source for the save ID and rank requirements. Overrides the legacy fields below when assigned.")]
+        [SerializeField] private LevelTimingDefinition timingDefinition;
 
         [Header("Ranks (Fastest To Slowest)")]
-        [SerializeField] private RankDefinition impossibleRank = new("Impossible", 30f, new Color32(255, 52, 52, 255));
-        [SerializeField] private RankDefinition goldRank = new("Gold", 45f, new Color32(255, 214, 66, 255));
-        [SerializeField] private RankDefinition silverRank = new("Silver", 60f, new Color32(217, 224, 231, 255));
-        [SerializeField] private RankDefinition bronzeRank = new("Bronze", 0f, new Color32(215, 122, 50, 255));
+        [SerializeField] private LevelTimingDefinition.RankDefinition impossibleRank = new("Impossible", 30f, new Color32(255, 52, 52, 255));
+        [SerializeField] private LevelTimingDefinition.RankDefinition goldRank = new("Gold", 45f, new Color32(255, 214, 66, 255));
+        [SerializeField] private LevelTimingDefinition.RankDefinition silverRank = new("Silver", 60f, new Color32(217, 224, 231, 255));
+        [SerializeField] private LevelTimingDefinition.RankDefinition bronzeRank = new("Bronze", 0f, new Color32(215, 122, 50, 255));
 
         [Header("Live UI")]
         [SerializeField] private TMP_Text gameplayTimerText;
@@ -269,7 +233,8 @@ namespace RunGun.Levels
         public bool HasBestTime => _hasBestTime;
         public bool IsNewRecord => _isNewRecord;
 
-        private string BestTimeKey => LevelProgression.BestTimeKeyPrefix + levelId.Trim();
+        private string EffectiveLevelId => timingDefinition != null ? timingDefinition.LevelId : levelId?.Trim();
+        private string BestTimeKey => LevelProgression.BestTimeKeyPrefix + EffectiveLevelId;
 
         private void Awake()
         {
@@ -277,6 +242,7 @@ namespace RunGun.Levels
             if (string.IsNullOrWhiteSpace(levelId) && IsIntroTrial(sceneName))
                 levelId = sceneName;
 
+            ApplyTimingDefinition();
             EnsureRankColors();
             AutoBindUi();
 
@@ -400,7 +366,7 @@ namespace RunGun.Levels
             finalView.ApplyIcons(this);
         }
 
-        private RankDefinition GetRank(float time)
+        private LevelTimingDefinition.RankDefinition GetRank(float time)
         {
             if (time <= impossibleRank.MaximumTime)
                 return impossibleRank;
@@ -435,11 +401,22 @@ namespace RunGun.Levels
 
         private bool HasValidLevelId()
         {
-            if (!string.IsNullOrWhiteSpace(levelId))
+            if (!string.IsNullOrWhiteSpace(EffectiveLevelId))
                 return true;
 
             Debug.LogWarning($"{nameof(LevelRunTimer)} on {name} needs a unique Level Id to save records.", this);
             return false;
+        }
+
+        private void ApplyTimingDefinition()
+        {
+            if (timingDefinition == null || timingDefinition.Ranks.Count < 4)
+                return;
+
+            impossibleRank = timingDefinition.Ranks[0];
+            goldRank = timingDefinition.Ranks[1];
+            silverRank = timingDefinition.Ranks[2];
+            bronzeRank = timingDefinition.Ranks[3];
         }
 
         private static string FormatTime(float seconds)
@@ -481,15 +458,14 @@ namespace RunGun.Levels
 
         private static Transform FindSceneTransformByName(string objectName)
         {
-            var transforms = Resources.FindObjectsOfTypeAll<Transform>();
+            var transforms = FindObjectsByType<Transform>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             for (int i = 0; i < transforms.Length; i++)
             {
                 Transform candidate = transforms[i];
                 if (candidate == null || candidate.name != objectName)
                     continue;
 
-                if (candidate.gameObject.scene.IsValid())
-                    return candidate;
+                return candidate;
             }
 
             return null;

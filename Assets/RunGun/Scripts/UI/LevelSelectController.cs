@@ -86,7 +86,7 @@ namespace RunGun.UI
                 {
                     if (_definition.UsesTimedRanks)
                     {
-                        LevelSelectCatalog.RankRequirement rank = _owner.GetRank(_definition, bestTime);
+                        LevelTimingDefinition.RankDefinition rank = _owner.GetRank(_definition, bestTime);
                         SetStatus(rank?.Icon, Color.white);
                     }
                     else
@@ -141,7 +141,7 @@ namespace RunGun.UI
                 _icon = FindChildComponent<Image>(root, "RankIcon");
             }
 
-            public void Show(LevelSelectCatalog.RankRequirement rank, bool last)
+            public void Show(LevelTimingDefinition.RankDefinition rank, bool last)
             {
                 _root.SetActive(true);
                 SetText(_name, rank.DisplayName?.ToUpperInvariant());
@@ -490,11 +490,11 @@ namespace RunGun.UI
             return null;
         }
 
-        private LevelSelectCatalog.RankRequirement GetRank(LevelSelectCatalog.LevelDefinition level, float time)
+        private LevelTimingDefinition.RankDefinition GetRank(LevelSelectCatalog.LevelDefinition level, float time)
         {
             for (int i = 0; i < level.Ranks.Count; i++)
             {
-                LevelSelectCatalog.RankRequirement rank = level.Ranks[i];
+                LevelTimingDefinition.RankDefinition rank = level.Ranks[i];
                 if (rank.MaximumTime <= 0f || time <= rank.MaximumTime)
                     return rank;
             }

@@ -255,7 +255,7 @@ namespace RunGun.Weapons
         {
             if (gunsPanel == null)
             {
-                gunsPanel = FindChildRecursive(transform, "GunsPanel") ?? GameObject.Find("GunsPanel")?.transform;
+                gunsPanel = FindChildRecursive(transform, "GunsPanel");
             }
 
             if (slots == null || slots.Count == 0)
@@ -281,7 +281,7 @@ namespace RunGun.Weapons
 
             if (ammoTextComponent == null)
             {
-                var ammoTextObject = FindChildRecursive(transform, "AmmoText")?.gameObject ?? GameObject.Find("AmmoText");
+                var ammoTextObject = FindChildRecursive(transform, "AmmoText")?.gameObject;
                 if (ammoTextObject != null)
                 {
                     ammoTextComponent = GetTextComponent(ammoTextObject);
@@ -302,7 +302,7 @@ namespace RunGun.Weapons
 
             if (ammoIcon == null)
             {
-                var ammoIconObject = FindChildRecursive(transform, "AmmoIcon")?.gameObject ?? GameObject.Find("AmmoIcon");
+                var ammoIconObject = FindChildRecursive(transform, "AmmoIcon")?.gameObject;
                 if (ammoIconObject != null)
                 {
                     ammoIcon = ammoIconObject.GetComponent<Image>();
@@ -320,12 +320,6 @@ namespace RunGun.Weapons
             Transform reloadRootTransform = reloadCircleRoot != null
                 ? reloadCircleRoot.transform
                 : FindChildRecursive(transform, "ReloadCircle");
-
-            if (reloadRootTransform == null)
-            {
-                reloadCircle = FindSceneImageByName("ReloadCircle");
-                reloadRootTransform = reloadCircle != null ? reloadCircle.transform : null;
-            }
 
             if (reloadRootTransform == null)
             {
@@ -407,7 +401,7 @@ namespace RunGun.Weapons
             {
                 var root = gunsPanel != null
                     ? FindChildRecursive(gunsPanel, slot.type.ToString())
-                    : GameObject.Find(slot.type.ToString())?.transform;
+                    : null;
 
                 if (root != null)
                 {
@@ -501,26 +495,6 @@ namespace RunGun.Weapons
                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
             return textProperty != null && textProperty.PropertyType == typeof(string) && textProperty.CanWrite;
-        }
-
-        private static Image FindSceneImageByName(string objectName)
-        {
-            var images = Resources.FindObjectsOfTypeAll<Image>();
-            for (var i = 0; i < images.Length; i++)
-            {
-                var image = images[i];
-                if (image == null || !image.gameObject.scene.IsValid())
-                {
-                    continue;
-                }
-
-                if (image.name.Equals(objectName, StringComparison.OrdinalIgnoreCase))
-                {
-                    return image;
-                }
-            }
-
-            return null;
         }
 
         private static Image GetReloadFillImage(GameObject reloadRoot)

@@ -61,6 +61,7 @@ MonoBehaviour:
       description: Prove every skill, complete the course, and beat the clock.
       sceneName: Trial_Final
       bestTimeId: TrialFinal
+      timingDefinition: {fileID: 11400000, guid: b50f4e07f47b41be98f8742d3b5969de, type: 2}
       tracksTime: 1
       usesTimedRanks: 1
       ranks:

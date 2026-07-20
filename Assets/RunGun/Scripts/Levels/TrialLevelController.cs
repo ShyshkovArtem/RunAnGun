@@ -89,8 +89,13 @@ namespace RunGun.Levels
 
         public void CompleteTrial()
         {
+            TryCompleteTrial();
+        }
+
+        public bool TryCompleteTrial()
+        {
             if (_completed || TutorialDialogueController.IsAnyDialoguePlaying)
-                return;
+                return false;
 
             SetPaused(false);
             LevelProgression.MarkCompleted(SceneManager.GetActiveScene().name);
@@ -109,6 +114,7 @@ namespace RunGun.Levels
 
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
+            return true;
         }
 
         public void RetryLevel()
@@ -382,11 +388,11 @@ namespace RunGun.Levels
             _levelTexts.Clear();
             AddLevelText(levelText);
 
-            var texts = Resources.FindObjectsOfTypeAll<TMP_Text>();
+            var texts = FindObjectsByType<TMP_Text>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             for (int i = 0; i < texts.Length; i++)
             {
                 TMP_Text candidate = texts[i];
-                if (candidate == null || !candidate.gameObject.scene.IsValid())
+                if (candidate == null)
                     continue;
 
                 if (candidate.name != LevelTextName && candidate.name != LegacyLevelTextName)
@@ -430,18 +436,14 @@ namespace RunGun.Levels
 
         private static GameObject FindSceneObjectByName(string objectName)
         {
-            var transforms = Resources.FindObjectsOfTypeAll<Transform>();
+            var transforms = FindObjectsByType<Transform>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             for (int i = 0; i < transforms.Length; i++)
             {
                 Transform candidate = transforms[i];
                 if (candidate == null || candidate.name != objectName)
                     continue;
 
-                GameObject gameObject = candidate.gameObject;
-                if (!gameObject.scene.IsValid())
-                    continue;
-
-                return gameObject;
+                return candidate.gameObject;
             }
 
             return null;
@@ -450,11 +452,11 @@ namespace RunGun.Levels
         private static List<T> FindSceneComponents<T>() where T : Component
         {
             var results = new List<T>();
-            var components = Resources.FindObjectsOfTypeAll<T>();
+            var components = FindObjectsByType<T>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             for (int i = 0; i < components.Length; i++)
             {
                 T component = components[i];
-                if (component == null || !component.gameObject.scene.IsValid())
+                if (component == null)
                     continue;
 
                 results.Add(component);

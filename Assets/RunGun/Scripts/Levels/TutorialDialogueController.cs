@@ -100,10 +100,15 @@ namespace RunGun.Levels
 
         public void StartDialogue()
         {
+            TryStartDialogue();
+        }
+
+        public bool TryStartDialogue()
+        {
             if (lines == null || lines.Length == 0)
             {
                 Debug.LogWarning($"{nameof(TutorialDialogueController)} on {name} has no dialogue lines.", this);
-                return;
+                return false;
             }
 
             if (autoFindPlayer && (playerController == null || weaponController == null))
@@ -120,6 +125,7 @@ namespace RunGun.Levels
             SetPlayerLocked(true);
             SetDialogueVisible(true);
             ShowLine(_lineIndex);
+            return true;
         }
 
         public void EndDialogue()

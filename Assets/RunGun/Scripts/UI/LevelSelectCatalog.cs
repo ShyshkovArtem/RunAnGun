@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using RunGun.Levels;
 using UnityEngine;
 
 namespace RunGun.UI
@@ -7,18 +8,6 @@ namespace RunGun.UI
     [CreateAssetMenu(fileName = "LevelSelectCatalog", menuName = "RunGun/UI/Level Select Catalog")]
     public sealed class LevelSelectCatalog : ScriptableObject
     {
-        [Serializable]
-        public sealed class RankRequirement
-        {
-            [SerializeField] private string displayName;
-            [SerializeField] private float maximumTime;
-            [SerializeField] private Sprite icon;
-
-            public string DisplayName => displayName;
-            public float MaximumTime => maximumTime;
-            public Sprite Icon => icon;
-        }
-
         [Serializable]
         public sealed class LevelDefinition
         {
@@ -28,18 +17,21 @@ namespace RunGun.UI
             [SerializeField] private string sceneName;
             [Tooltip("Must match LevelRunTimer's Level Id for timed levels.")]
             [SerializeField] private string bestTimeId;
+            [Tooltip("Shared source for the save ID and rank requirements. Overrides the legacy fields below when assigned.")]
+            [SerializeField] private LevelTimingDefinition timingDefinition;
             [SerializeField] private bool tracksTime;
             [SerializeField] private bool usesTimedRanks;
-            [SerializeField] private List<RankRequirement> ranks = new();
+            [SerializeField] private List<LevelTimingDefinition.RankDefinition> ranks = new();
 
             public string Number => number;
             public string DisplayName => displayName;
             public string Description => description;
             public string SceneName => sceneName;
-            public string BestTimeId => bestTimeId;
-            public bool TracksTime => tracksTime;
-            public bool UsesTimedRanks => usesTimedRanks;
-            public IReadOnlyList<RankRequirement> Ranks => ranks;
+            public string BestTimeId => timingDefinition != null ? timingDefinition.LevelId : bestTimeId;
+            public bool TracksTime => timingDefinition != null || tracksTime;
+            public bool UsesTimedRanks => timingDefinition != null ? timingDefinition.HasTimedRanks : usesTimedRanks;
+            public IReadOnlyList<LevelTimingDefinition.RankDefinition> Ranks =>
+                timingDefinition != null ? timingDefinition.Ranks : ranks;
         }
 
         [Serializable]

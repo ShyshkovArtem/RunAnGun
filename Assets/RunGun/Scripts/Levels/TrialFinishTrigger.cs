@@ -38,8 +38,7 @@ namespace RunGun.Levels
                 return;
             }
 
-            _completed = true;
-            trialLevelController.CompleteTrial();
+            _completed = trialLevelController.TryCompleteTrial();
         }
 
         private bool IsPlayer(Collider other)

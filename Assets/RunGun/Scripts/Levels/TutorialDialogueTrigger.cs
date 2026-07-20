@@ -55,8 +55,7 @@ namespace RunGun.Levels
             if (dialogueController.IsPlaying)
                 return;
 
-            _hasPlayed = true;
-            dialogueController.StartDialogue();
+            _hasPlayed = dialogueController.TryStartDialogue();
         }
 
         private bool IsPlayer(Collider other)
