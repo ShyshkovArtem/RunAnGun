@@ -57,6 +57,7 @@ namespace RunGun.Levels
 
         public bool PlayOnStart => playOnStart;
         public bool IsPlaying => _isPlaying;
+        public static bool IsAnyDialoguePlaying => _activeDialogue != null && _activeDialogue._isPlaying;
 
         private void Awake()
         {

@@ -22,10 +22,10 @@ namespace RunGun.Levels
         private const string RetryButtonName = "RetryBtn";
         private const string ContinueButtonName = "ContinueBtn";
         private const string NextLevelButtonName = "NextLvlBtn";
+        private const string MainMenuSceneName = "MainMenu";
 
         [Header("Level")]
         [SerializeField] private string levelDisplayName;
-        [SerializeField] private string menuSceneName;
         [SerializeField] private string nextTrialSceneName;
 
         [Header("UI")]
@@ -80,16 +80,20 @@ namespace RunGun.Levels
             if (_completed)
                 return;
 
+            if (TutorialDialogueController.IsAnyDialoguePlaying)
+                return;
+
             if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
                 TogglePause();
         }
 
         public void CompleteTrial()
         {
-            if (_completed)
+            if (_completed || TutorialDialogueController.IsAnyDialoguePlaying)
                 return;
 
             SetPaused(false);
+            LevelProgression.MarkCompleted(SceneManager.GetActiveScene().name);
             FindRunTimer();
             runTimer?.FinishRun();
             _completed = true;
@@ -165,18 +169,21 @@ namespace RunGun.Levels
 
         public void GoToMenu()
         {
-            if (string.IsNullOrWhiteSpace(menuSceneName))
+            if (!Application.CanStreamedLevelBeLoaded(MainMenuSceneName))
             {
-                Debug.LogWarning($"{nameof(TrialLevelController)} on {name} has no menu scene configured yet.", this);
+                Debug.LogError($"Scene '{MainMenuSceneName}' is not enabled in Build Settings.", this);
                 return;
             }
 
             Time.timeScale = 1f;
-            SceneManager.LoadScene(menuSceneName);
+            SceneManager.LoadScene(MainMenuSceneName);
         }
 
         public void TogglePause()
         {
+            if (TutorialDialogueController.IsAnyDialoguePlaying)
+                return;
+
             SetPaused(!_paused);
         }
 
@@ -327,7 +334,7 @@ namespace RunGun.Levels
             if (autoFindPlayer && (playerController == null || weaponController == null))
                 FindPlayerReferences();
 
-            SetPlayerLocked(_paused);
+            SetPlayerLocked(_paused || TutorialDialogueController.IsAnyDialoguePlaying);
 
             if (trialPausePanel != null)
                 trialPausePanel.SetActive(_paused);

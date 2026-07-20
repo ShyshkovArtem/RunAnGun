@@ -282,8 +282,6 @@ namespace ElmanGameDevTools.PlayerSystem
 
         private void OnEnable()
         {
-            InputSystem.settings.updateMode = InputSettings.UpdateMode.ProcessEventsInDynamicUpdate;
-            EnableMouseDevices();
             InputSystem.onEvent += HandleInputEvent;
         }
 
@@ -1032,18 +1030,6 @@ namespace ElmanGameDevTools.PlayerSystem
                 look += Gamepad.current.rightStick.ReadValue() * 15f;
 
             return look;
-        }
-
-        private static void EnableMouseDevices()
-        {
-            foreach (InputDevice device in InputSystem.devices)
-            {
-                if (device is not Mouse mouse)
-                    continue;
-
-                if (!mouse.enabled)
-                    InputSystem.EnableDevice(mouse);
-            }
         }
 
         private static Mouse GetActiveMouse()

@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e42104ae8434394b06e9f5ebdb1fc64, type: 3}
+  m_Name: LevelSelectCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::RunGun.UI.LevelSelectCatalog
+  categories:
+  - id: trials
+    displayName: Trials
+    levels:
+    - number: 01
+      displayName: Movement
+      description: Learn the foundations of movement and reach the finish.
+      sceneName: Trial_1
+      bestTimeId: Trial_1
+      tracksTime: 1
+      usesTimedRanks: 0
+      ranks: []
+    - number: 02
+      displayName: Targets
+      description: Shoot every target to open the route forward.
+      sceneName: Trial_2
+      bestTimeId: Trial_2
+      tracksTime: 1
+      usesTimedRanks: 0
+      ranks: []
+    - number: 03
+      displayName: Shotgun
+      description: Use the shotgun to fight, move, and cross the course.
+      sceneName: Trial_3
+      bestTimeId: Trial_3
+      tracksTime: 1
+      usesTimedRanks: 0
+      ranks: []
+    - number: 04
+      displayName: Rifle + Slide
+      description: Combine rifle control, sliding, and carried momentum.
+      sceneName: Trial_4
+      bestTimeId: Trial_4
+      tracksTime: 1
+      usesTimedRanks: 0
+      ranks: []
+    - number: 05
+      displayName: Bazooka
+      description: Redirect yourself through the course with explosive force.
+      sceneName: Trial_5
+      bestTimeId: Trial_5
+      tracksTime: 1
+      usesTimedRanks: 0
+      ranks: []
+    - number: 06
+      displayName: Final Test
+      description: Prove every skill, complete the course, and beat the clock.
+      sceneName: Trial_Final
+      bestTimeId: TrialFinal
+      tracksTime: 1
+      usesTimedRanks: 1
+      ranks:
+      - displayName: Impossible
+        maximumTime: 30
+        icon: {fileID: 21300000, guid: 6fea311038be0f64d996bfbffc32c1c4, type: 3}
+      - displayName: Gold
+        maximumTime: 45
+        icon: {fileID: 21300000, guid: 166d5a44d9f395c48b3305fb011f416c, type: 3}
+      - displayName: Silver
+        maximumTime: 60
+        icon: {fileID: 21300000, guid: a957fe6d3bef8964286fb522a4d5ee01, type: 3}
+      - displayName: Bronze
+        maximumTime: 0
+        icon: {fileID: 21300000, guid: 9f7d18bb78ed3364aa04ad8511bed06c, type: 3}
+  - id: levels
+    displayName: Levels
+    levels: []

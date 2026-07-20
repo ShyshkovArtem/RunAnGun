@@ -45,7 +45,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RunGun.Levels.TrialLevelController
   levelDisplayName: Trial 1  Move
-  menuSceneName: Trial_1
   nextTrialSceneName: Trial_2
   trialFinalPanel: {fileID: 0}
   trialPausePanel: {fileID: 0}

@@ -2,6 +2,7 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace RunGun.Levels
@@ -232,7 +233,6 @@ namespace RunGun.Levels
             }
         }
 
-        private const string BestTimeKeyPrefix = "RunGun.BestTime.";
         private const string PausePanelName = "TrialPausePanel";
         private const string FinalPanelName = "FinalPanel";
         private const string LegacyFinalPanelName = "TrialFinalPanel";
@@ -269,10 +269,14 @@ namespace RunGun.Levels
         public bool HasBestTime => _hasBestTime;
         public bool IsNewRecord => _isNewRecord;
 
-        private string BestTimeKey => BestTimeKeyPrefix + levelId.Trim();
+        private string BestTimeKey => LevelProgression.BestTimeKeyPrefix + levelId.Trim();
 
         private void Awake()
         {
+            string sceneName = SceneManager.GetActiveScene().name;
+            if (string.IsNullOrWhiteSpace(levelId) && IsIntroTrial(sceneName))
+                levelId = sceneName;
+
             EnsureRankColors();
             AutoBindUi();
 
@@ -280,9 +284,18 @@ namespace RunGun.Levels
             ResetRun();
         }
 
+        private void Start()
+        {
+            if (gameplayTimerText == null)
+            {
+                AutoBindUi();
+                RefreshAllUi();
+            }
+        }
+
         private void Update()
         {
-            if (_state != RunState.Running)
+            if (_state != RunState.Running || TutorialDialogueController.IsAnyDialoguePlaying)
                 return;
 
             _elapsedTime += Time.deltaTime;
@@ -366,7 +379,10 @@ namespace RunGun.Levels
             {
                 Transform timer = FindSceneTransformByName("Timer");
                 if (timer != null)
+                {
                     gameplayTimerText = timer.GetComponent<TMP_Text>();
+                    timer.gameObject.SetActive(true);
+                }
             }
 
             Transform pausePanel = FindSceneTransformByName(PausePanelName);
@@ -495,6 +511,46 @@ namespace RunGun.Levels
             }
 
             return null;
+        }
+
+        private static bool IsIntroTrial(string sceneName)
+        {
+            return sceneName is "Trial_1" or "Trial_2" or "Trial_3" or "Trial_4" or "Trial_5";
+        }
+
+        private static void EnsureTimerForScene(Scene scene)
+        {
+            if (!scene.IsValid() || !IsIntroTrial(scene.name))
+                return;
+
+            GameObject[] roots = scene.GetRootGameObjects();
+            for (int i = 0; i < roots.Length; i++)
+            {
+                if (roots[i].GetComponentInChildren<LevelRunTimer>(true) != null)
+                    return;
+            }
+
+            var timerObject = new GameObject(nameof(LevelRunTimer));
+            SceneManager.MoveGameObjectToScene(timerObject, scene);
+            timerObject.AddComponent<LevelRunTimer>();
+        }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        private static void RegisterSceneCallback()
+        {
+            SceneManager.sceneLoaded -= HandleSceneLoaded;
+            SceneManager.sceneLoaded += HandleSceneLoaded;
+        }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void EnsureTimerForActiveScene()
+        {
+            EnsureTimerForScene(SceneManager.GetActiveScene());
+        }
+
+        private static void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            EnsureTimerForScene(scene);
         }
     }
 }
