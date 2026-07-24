@@ -64,7 +64,7 @@ namespace RunGun.Levels
         private readonly Collider[] _carryHits = new Collider[16];
         private readonly HashSet<CharacterController> _carriedControllers = new();
         private Rigidbody _rigidbody;
-        private Collider _platformCollider;
+        private Collider[] _platformColliders = Array.Empty<Collider>();
         private Vector3 _startPosition;
         private Quaternion _startRotation;
         private Vector3 _lastPosition;
@@ -177,7 +177,7 @@ namespace RunGun.Levels
         private void CacheComponents()
         {
             _rigidbody = GetComponent<Rigidbody>();
-            _platformCollider = GetComponent<Collider>();
+            _platformColliders = GetComponentsInChildren<Collider>(true);
         }
 
         private void EnsureStartPoseCaptured()
@@ -324,32 +324,51 @@ namespace RunGun.Levels
 
         private void CarryCharacterControllers(Vector3 positionDelta, Quaternion rotationDelta)
         {
-            if (_platformCollider == null || positionDelta.sqrMagnitude < 0.000001f && Quaternion.Angle(Quaternion.identity, rotationDelta) < 0.001f)
+            if (positionDelta.sqrMagnitude < 0.000001f &&
+                Quaternion.Angle(Quaternion.identity, rotationDelta) < 0.001f)
                 return;
 
             _carriedControllers.Clear();
 
-            Bounds bounds = _platformCollider.bounds;
-            Vector3 center = new(bounds.center.x, bounds.max.y + carryCheckHeight * 0.5f, bounds.center.z);
-            Vector3 halfExtents = new(
-                bounds.extents.x + carryPadding,
-                carryCheckHeight * 0.5f,
-                bounds.extents.z + carryPadding);
-
-            int hitCount = Physics.OverlapBoxNonAlloc(center, halfExtents, _carryHits, Quaternion.identity, carryMask, QueryTriggerInteraction.Ignore);
-            for (int i = 0; i < hitCount; i++)
+            foreach (Collider platformCollider in _platformColliders)
             {
-                Collider hit = _carryHits[i];
-                if (hit == null || hit == _platformCollider)
+                if (platformCollider == null ||
+                    !platformCollider.enabled ||
+                    platformCollider.isTrigger ||
+                    !platformCollider.gameObject.activeInHierarchy)
+                {
                     continue;
+                }
 
-                CharacterController controller = hit.GetComponentInParent<CharacterController>();
-                if (controller == null || !_carriedControllers.Add(controller))
-                    continue;
+                Bounds bounds = platformCollider.bounds;
+                Vector3 center = new(bounds.center.x, bounds.max.y + carryCheckHeight * 0.5f, bounds.center.z);
+                Vector3 halfExtents = new(
+                    bounds.extents.x + carryPadding,
+                    carryCheckHeight * 0.5f,
+                    bounds.extents.z + carryPadding);
 
-                Vector3 rotatedOffset = rotationDelta * (controller.transform.position - transform.position);
-                Vector3 rotationCarryDelta = (transform.position + rotatedOffset) - controller.transform.position;
-                controller.Move(positionDelta + rotationCarryDelta);
+                int hitCount = Physics.OverlapBoxNonAlloc(
+                    center,
+                    halfExtents,
+                    _carryHits,
+                    Quaternion.identity,
+                    carryMask,
+                    QueryTriggerInteraction.Ignore);
+
+                for (int i = 0; i < hitCount; i++)
+                {
+                    Collider hit = _carryHits[i];
+                    if (hit == null || hit.transform.IsChildOf(transform))
+                        continue;
+
+                    CharacterController controller = hit.GetComponentInParent<CharacterController>();
+                    if (controller == null || !_carriedControllers.Add(controller))
+                        continue;
+
+                    Vector3 rotatedOffset = rotationDelta * (controller.transform.position - transform.position);
+                    Vector3 rotationCarryDelta = (transform.position + rotatedOffset) - controller.transform.position;
+                    controller.Move(positionDelta + rotationCarryDelta);
+                }
             }
         }
 
