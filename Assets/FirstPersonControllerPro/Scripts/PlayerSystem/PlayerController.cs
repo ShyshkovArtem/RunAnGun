@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
+using RunGun.Settings;
 
 namespace ElmanGameDevTools.PlayerSystem
 {
@@ -294,6 +295,7 @@ namespace ElmanGameDevTools.PlayerSystem
         private void Start()
         {
             if (controller == null) controller = GetComponent<CharacterController>();
+            sensitivity = GameSettings.PlayerLookSensitivity;
             EnsureMovementAudioSources();
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
@@ -992,10 +994,10 @@ namespace ElmanGameDevTools.PlayerSystem
 
             if (Keyboard.current != null)
             {
-                if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed) move.y += 1f;
-                if (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed) move.y -= 1f;
-                if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed) move.x += 1f;
-                if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed) move.x -= 1f;
+                if (GameSettings.IsPressed(GameAction.MoveForward)) move.y += 1f;
+                if (GameSettings.IsPressed(GameAction.MoveBackward)) move.y -= 1f;
+                if (GameSettings.IsPressed(GameAction.MoveRight)) move.x += 1f;
+                if (GameSettings.IsPressed(GameAction.MoveLeft)) move.x -= 1f;
             }
 
             if (Gamepad.current != null)
@@ -1074,25 +1076,25 @@ namespace ElmanGameDevTools.PlayerSystem
 
         private static bool IsJumpPressedThisFrame()
         {
-            return (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
+            return GameSettings.WasPressedThisFrame(GameAction.Jump)
                 || (Gamepad.current != null && Gamepad.current.buttonSouth.wasPressedThisFrame);
         }
 
         private static bool IsSprintPressed()
         {
-            return (Keyboard.current != null && Keyboard.current.leftShiftKey.isPressed)
+            return GameSettings.IsPressed(GameAction.Sprint)
                 || (Gamepad.current != null && Gamepad.current.leftStickButton.isPressed);
         }
 
         private static bool IsCrouchPressed()
         {
-            return (Keyboard.current != null && (Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.cKey.isPressed))
+            return GameSettings.IsPressed(GameAction.Crouch)
                 || (Gamepad.current != null && Gamepad.current.buttonEast.isPressed);
         }
 
         private static bool IsCrouchPressedThisFrame()
         {
-            return (Keyboard.current != null && (Keyboard.current.leftCtrlKey.wasPressedThisFrame || Keyboard.current.cKey.wasPressedThisFrame))
+            return GameSettings.WasPressedThisFrame(GameAction.Crouch)
                 || (Gamepad.current != null && Gamepad.current.buttonEast.wasPressedThisFrame);
         }
 

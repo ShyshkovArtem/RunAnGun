@@ -1,8 +1,10 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using RunGun.Levels;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -43,6 +45,7 @@ namespace RunGun.UI
             }
 
             public GameObject Root { get; }
+            public Button Button => _button;
 
             public void Show(LevelSelectCatalog.LevelDefinition definition)
             {
@@ -236,12 +239,67 @@ namespace RunGun.UI
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
             RefreshSelection();
+            StartCoroutine(SelectDefaultNextFrame());
         }
 
         public void Hide()
         {
             SetMainMenuButtonsEnabled(true);
             gameObject.SetActive(false);
+            SelectGameObject(null);
+        }
+
+        private IEnumerator SelectDefaultNextFrame()
+        {
+            yield return null;
+
+            if (!isActiveAndEnabled)
+                yield break;
+
+            Button firstLevelButton = GetFirstActiveLevelButton();
+
+            if (firstLevelButton == null && _selectedCategory != null &&
+                _categoryButtons.TryGetValue(_selectedCategory.Id, out Button categoryButton))
+            {
+                firstLevelButton = categoryButton;
+            }
+
+            SelectGameObject(firstLevelButton != null ? firstLevelButton.gameObject : null);
+        }
+
+        private IEnumerator SelectLevelAfterCategoryChange()
+        {
+            yield return null;
+
+            if (!isActiveAndEnabled)
+                yield break;
+
+            Button firstLevelButton = GetFirstActiveLevelButton();
+            if (firstLevelButton != null)
+                SelectGameObject(firstLevelButton.gameObject);
+        }
+
+        private Button GetFirstActiveLevelButton()
+        {
+            for (int i = 0; i < _levelRows.Count; i++)
+            {
+                Button candidate = _levelRows[i].Button;
+                if (candidate != null && candidate.IsActive() && candidate.IsInteractable())
+                    return candidate;
+            }
+
+            return null;
+        }
+
+        private static void SelectGameObject(GameObject target)
+        {
+            EventSystem eventSystem = EventSystem.current;
+            if (eventSystem == null)
+                return;
+
+            eventSystem.SetSelectedGameObject(null);
+            if (target != null && target.activeInHierarchy)
+                eventSystem.SetSelectedGameObject(target);
         }
 
         private void BindHierarchy()
@@ -391,6 +449,10 @@ namespace RunGun.UI
                 ShowEmptyCategory();
 
             UpdateCategoryProgress();
+
+            if (_initialized && isActiveAndEnabled)
+                StartCoroutine(SelectLevelAfterCategoryChange());
+
             return true;
         }
 

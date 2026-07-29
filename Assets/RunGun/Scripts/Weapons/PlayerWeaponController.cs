@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ElmanGameDevTools.PlayerSystem;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using RunGun.Settings;
 using UnityEngine.InputSystem.Controls;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -764,8 +765,7 @@ namespace RunGun.Weapons
 
         private void ReadReloadInput()
         {
-            var keyboard = Keyboard.current;
-            if (keyboard != null && keyboard.rKey.wasPressedThisFrame)
+            if (GameSettings.WasPressedThisFrame(GameAction.Reload))
             {
                 TryReload();
             }

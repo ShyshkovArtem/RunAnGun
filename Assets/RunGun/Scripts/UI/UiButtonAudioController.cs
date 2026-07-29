@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using RunGun.Settings;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -47,7 +48,13 @@ namespace RunGun.UI
 
                 AddGraphic(button.GetComponentInChildren<TMP_Text>(true));
                 Transform border = FindChildRecursive(button.transform, "Border");
-                if (border != null)
+                bool ownsPersistentSelectionBorder =
+                    (button.GetComponentInParent<LevelSelectController>() != null &&
+                     button.name.StartsWith("Line_1", StringComparison.Ordinal)) ||
+                    (button.GetComponentInParent<CrosshairSettingsTab>() != null &&
+                     (button.name.EndsWith("Style", StringComparison.Ordinal) ||
+                      button.name.EndsWith("Color", StringComparison.Ordinal)));
+                if (border != null && !ownsPersistentSelectionBorder)
                     AddGraphic(border.GetComponent<Graphic>());
 
                 _selectArrow = FindChildRecursive(button.transform, "SelectArrow");
@@ -68,14 +75,15 @@ namespace RunGun.UI
                 Restore();
             }
 
-            public void UpdateVisuals(bool highlighted, bool pointerPressed)
+            public void UpdateVisuals(bool hovered, bool selected, bool pointerPressed)
             {
                 if (Button == null || !Button.gameObject.activeInHierarchy)
                     return;
 
                 bool interactable = Button.IsInteractable();
                 bool pressed = interactable && (pointerPressed || Time.unscaledTime < _pressVisualUntil);
-                highlighted &= interactable;
+                hovered &= interactable;
+                selected &= interactable;
                 float blend = 1f - Mathf.Exp(-_owner.TransitionSpeed * Time.unscaledDeltaTime);
 
                 for (int i = 0; i < _graphics.Count; i++)
@@ -86,7 +94,9 @@ namespace RunGun.UI
 
                     Color target = pressed
                         ? _owner.PressColor
-                        : highlighted ? _owner.HoverColor : _originalColors[i];
+                        : hovered
+                            ? _owner.HoverColor
+                            : selected ? _owner.SelectedColor : _originalColors[i];
                     graphic.color = Color.Lerp(graphic.color, target, blend);
                 }
 
@@ -95,7 +105,8 @@ namespace RunGun.UI
                 Button.transform.localScale = Vector3.Lerp(Button.transform.localScale, scale, blend);
 
                 if (_selectArrow != null)
-                    _selectArrow.gameObject.SetActive(_selectArrowWasActive || highlighted || pressed);
+                    _selectArrow.gameObject.SetActive(
+                        _selectArrowWasActive || hovered || selected || pressed);
             }
 
             public void ShowPressFeedback()
@@ -140,6 +151,7 @@ namespace RunGun.UI
 
         [Header("Visual Feedback")]
         [SerializeField] private Color hoverColor = new Color32(49, 216, 255, 255);
+        [SerializeField] private Color selectedColor = new Color32(255, 52, 52, 255);
         [SerializeField] private Color pressColor = new Color32(255, 62, 70, 255);
         [Range(0.8f, 1f)] [SerializeField] private float pressedScale = 0.96f;
         [Min(0f)] [SerializeField] private float pressFlashDuration = 0.08f;
@@ -148,11 +160,15 @@ namespace RunGun.UI
         private readonly List<ButtonBinding> _bindings = new();
         private Canvas _canvas;
         private ButtonBinding _hoveredBinding;
+        private ButtonBinding _selectedBinding;
+        private ButtonBinding _persistentTabBinding;
         private ButtonBinding _lastPointerPressBinding;
         private int _lastPointerPressFrame = -10;
         private float _lastHoverTime = float.NegativeInfinity;
 
         private Color HoverColor => hoverColor.a > 0f ? hoverColor : new Color32(49, 216, 255, 255);
+        private Color SelectedColor =>
+            selectedColor.a > 0f ? selectedColor : new Color32(255, 52, 52, 255);
         private Color PressColor => pressColor.a > 0f ? pressColor : new Color32(255, 62, 70, 255);
         private float PressedScale => pressedScale > 0f ? pressedScale : 0.96f;
         private float PressFlashDuration => pressFlashDuration > 0f ? pressFlashDuration : 0.08f;
@@ -174,9 +190,34 @@ namespace RunGun.UI
         {
             UpdateMouseHover();
 
-            Button selectedButton = EventSystem.current != null
-                ? EventSystem.current.currentSelectedGameObject?.GetComponent<Button>()
-                : null;
+            Button selectedButton = null;
+            if (EventSystem.current != null)
+            {
+                GameObject selectedObject = EventSystem.current.currentSelectedGameObject;
+                if (selectedObject != null)
+                    selectedButton = selectedObject.GetComponent<Button>();
+            }
+
+            if (selectedButton != null)
+            {
+                _selectedBinding = FindBinding(selectedButton);
+                if (IsSettingsTab(selectedButton))
+                    _persistentTabBinding = _selectedBinding;
+            }
+            else if (_selectedBinding != null &&
+                     (_selectedBinding.Button == null ||
+                      !_selectedBinding.Button.gameObject.activeInHierarchy ||
+                      !_selectedBinding.Button.IsInteractable()))
+                _selectedBinding = null;
+
+            if (_persistentTabBinding != null &&
+                (_persistentTabBinding.Button == null ||
+                 !_persistentTabBinding.Button.gameObject.activeInHierarchy ||
+                 !_persistentTabBinding.Button.IsInteractable()))
+            {
+                _persistentTabBinding = null;
+            }
+
             Mouse mouse = Mouse.current;
             bool mousePressed = mouse != null && mouse.leftButton.isPressed;
             if (_hoveredBinding != null && mouse != null && mouse.leftButton.wasPressedThisFrame)
@@ -190,10 +231,41 @@ namespace RunGun.UI
             for (int i = 0; i < _bindings.Count; i++)
             {
                 ButtonBinding binding = _bindings[i];
-                bool highlighted = binding == _hoveredBinding || binding.Button == selectedButton;
+                bool hovered = binding == _hoveredBinding;
+                bool selected = binding == _selectedBinding ||
+                                binding == _persistentTabBinding;
                 bool pointerPressed = binding == _hoveredBinding && mousePressed;
-                binding.UpdateVisuals(highlighted, pointerPressed);
+                binding.UpdateVisuals(hovered, selected, pointerPressed);
             }
+        }
+
+        public void ClearRetainedSelection(Button button)
+        {
+            if (button == null)
+                return;
+
+            if (_selectedBinding != null && _selectedBinding.Button == button)
+                _selectedBinding = null;
+
+            EventSystem eventSystem = EventSystem.current;
+            if (eventSystem != null && eventSystem.currentSelectedGameObject == button.gameObject)
+                eventSystem.SetSelectedGameObject(null);
+        }
+
+        private ButtonBinding FindBinding(Button button)
+        {
+            for (int i = 0; i < _bindings.Count; i++)
+            {
+                if (_bindings[i].Button == button)
+                    return _bindings[i];
+            }
+
+            return null;
+        }
+
+        private static bool IsSettingsTab(Button button)
+        {
+            return button.name is "DisplayBtn" or "AudioBtn" or "ControlsBtn" or "CrosshairBtn";
         }
 
         [ContextMenu("Refresh Button Bindings")]
@@ -276,6 +348,8 @@ namespace RunGun.UI
 
             _bindings.Clear();
             _hoveredBinding = null;
+            _selectedBinding = null;
+            _persistentTabBinding = null;
         }
 
         private void ConfigureAudioSource()

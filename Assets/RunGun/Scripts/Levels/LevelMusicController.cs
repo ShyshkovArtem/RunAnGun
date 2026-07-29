@@ -1,4 +1,5 @@
 using System.Collections;
+using RunGun.Settings;
 using UnityEngine;
 
 namespace RunGun.Levels
@@ -55,12 +56,13 @@ namespace RunGun.Levels
             if (_fadeRoutine != null)
                 StopCoroutine(_fadeRoutine);
 
-            audioSource.volume = fadeInDuration > 0f ? 0f : volume;
+            float targetVolume = volume * GameSettings.MusicVolume;
+            audioSource.volume = fadeInDuration > 0f ? 0f : targetVolume;
             if (!audioSource.isPlaying)
                 audioSource.Play();
 
             if (fadeInDuration > 0f)
-                _fadeRoutine = StartCoroutine(FadeVolume(volume, fadeInDuration, stopAfterFade: false));
+                _fadeRoutine = StartCoroutine(FadeVolume(targetVolume, fadeInDuration, stopAfterFade: false));
         }
 
         public void Stop()
@@ -81,7 +83,13 @@ namespace RunGun.Levels
         {
             volume = Mathf.Clamp01(newVolume);
             if (audioSource != null)
-                audioSource.volume = volume;
+                audioSource.volume = volume * GameSettings.MusicVolume;
+        }
+
+        public void ApplyUserVolume()
+        {
+            if (audioSource != null)
+                audioSource.volume = volume * GameSettings.MusicVolume;
         }
 
         private void EnsureAudioSource()
