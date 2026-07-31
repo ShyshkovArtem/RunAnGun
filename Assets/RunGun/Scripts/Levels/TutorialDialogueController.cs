@@ -1,5 +1,6 @@
 using System;
 using ElmanGameDevTools.PlayerSystem;
+using RunGun.Settings;
 using RunGun.Weapons;
 using TMPro;
 using UnityEngine;
@@ -34,6 +35,13 @@ namespace RunGun.Levels
         [SerializeField] private TMP_Text speakerNameText;
         [SerializeField] private TMP_Text dialogueText;
 
+        [Header("Dialogue Typography")]
+        [SerializeField] private bool applyGameTypography = true;
+        [SerializeField] private Color speakerColor = new Color32(50, 190, 255, 255);
+        [SerializeField] private Color dialogueColor = Color.white;
+        [SerializeField, Range(-5f, 10f)] private float dialogueCharacterSpacing = 0.5f;
+        [SerializeField, Range(-20f, 20f)] private float dialogueLineSpacing = 2f;
+
         [Header("3D Speaker")]
         [SerializeField] private Transform poseSpawnAnchor;
         [SerializeField] private bool parentPoseToAnchor = true;
@@ -63,6 +71,8 @@ namespace RunGun.Levels
         {
             if (autoFindPlayer)
                 FindPlayerReferences();
+
+            ApplyTypography();
 
             SetDialogueVisible(false);
             ClearSpawnedPose();
@@ -202,14 +212,34 @@ namespace RunGun.Levels
                 return;
 
             DialogueLine line = lines[index];
-            if (speakerNameText != null)
-                speakerNameText.text = line.speakerName;
-
-            if (dialogueText != null)
-                dialogueText.text = line.text;
+            GameLocalization.SetText(speakerNameText, line.speakerName);
+            GameLocalization.SetText(dialogueText, line.text);
+            ApplyTypography();
 
             StartTextReveal();
             SpawnPose(line.speakerPosePrefab);
+        }
+
+        private void ApplyTypography()
+        {
+            if (!applyGameTypography)
+                return;
+
+            if (speakerNameText != null)
+            {
+                speakerNameText.color = speakerColor;
+                speakerNameText.fontStyle = FontStyles.Bold | FontStyles.Italic;
+                speakerNameText.horizontalAlignment = HorizontalAlignmentOptions.Left;
+            }
+
+            if (dialogueText != null)
+            {
+                dialogueText.color = dialogueColor;
+                dialogueText.fontStyle = FontStyles.Bold | FontStyles.Italic;
+                dialogueText.horizontalAlignment = HorizontalAlignmentOptions.Left;
+                dialogueText.characterSpacing = dialogueCharacterSpacing;
+                dialogueText.lineSpacing = dialogueLineSpacing;
+            }
         }
 
         private void StartTextReveal()

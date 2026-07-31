@@ -1,4 +1,5 @@
 using System;
+using RunGun.Settings;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -427,8 +428,7 @@ namespace RunGun.Levels
 
         private static void SetText(TMP_Text target, string value)
         {
-            if (target != null)
-                target.text = value;
+            GameLocalization.SetText(target, value);
         }
 
         private static void SetTextColor(TMP_Text target, Color color)

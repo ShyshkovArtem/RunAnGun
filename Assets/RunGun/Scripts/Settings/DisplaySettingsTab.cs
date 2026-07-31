@@ -69,9 +69,9 @@ namespace RunGun.Settings
             windowModeDropdown.ClearOptions();
             windowModeDropdown.AddOptions(new List<string>
             {
-                "Borderless",
-                "Exclusive Fullscreen",
-                "Windowed"
+                GameLocalization.Translate("Borderless"),
+                GameLocalization.Translate("Exclusive Fullscreen"),
+                GameLocalization.Translate("Windowed")
             });
             windowModeDropdown.SetValueWithoutNotify(settings.GetCurrentWindowModeIndex());
             windowModeDropdown.RefreshShownValue();

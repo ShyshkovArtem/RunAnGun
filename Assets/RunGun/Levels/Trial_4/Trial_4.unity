@@ -1149,12 +1149,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RunGun.Levels.TutorialDialogueController
   lines:
   - speakerName: Blue Guy
-    text: Now combine both lessons. Shoot every moving target while sliding down
+    text: Now combine both lessons. Shoot every moving target while sliding through
       the final lane.
     speakerPosePrefab: {fileID: 2736272047063480907, guid: ca5a1075237da5545b10438e8106affd, type: 3}
   - speakerName: Blue Guy
-    text: The finish gate opens when the last target falls. Try to reach it without
-      giving up your speed.
+    text: The finish gate opens when the last target falls. Reach it without losing
+      your courier momentum.
     speakerPosePrefab: {fileID: 2736272047063480907, guid: 9804a0ccb68c4404f9d2f5dce9c70874, type: 3}
   playOnStart: 0
   hidePoseOnEnd: 1
@@ -4891,12 +4891,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RunGun.Levels.TutorialDialogueController
   lines:
   - speakerName: Blue Guy
-    text: The slope ahead is built for sliding. Hold Left Ctrl while moving downhill
-      to gain speed.
+    text: Fast deliveries demand control in tight spaces. Hold LEFT CTRL while moving
+      downhill to begin a slide.
     speakerPosePrefab: {fileID: 2736272047063480907, guid: ca5a1075237da5545b10438e8106affd, type: 3}
   - speakerName: Blue Guy
-    text: Stay in the slide beneath the low gate, then jump from the runway to carry
-      that momentum over the gap.
+    text: Stay low, then jump from the runway to carry your speed across the gap
+      and jump again in timing to keep momentum.
     speakerPosePrefab: {fileID: 2736272047063480907, guid: a6dce48185b1cf24fb9f542767adc9c2, type: 3}
   playOnStart: 0
   hidePoseOnEnd: 1
@@ -5406,15 +5406,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RunGun.Levels.TutorialDialogueController
   lines:
   - speakerName: Blue Guy
-    text: This trial adds the rifle. It fires quickly, so keep moving while you clear
-      groups of targets.
+    text: This trial adds the rifle, the Corps standard for sustained fire. Keep
+      moving while you clear groups of targets.
     speakerPosePrefab: {fileID: 2736272047063480907, guid: ca5a1075237da5545b10438e8106affd, type: 3}
   - speakerName: Blue Guy
-    text: The rifle gives only a small movement push. Its real strength is hitting
-      several things without breaking your flow.
+    text: Its recoil gives only a small movement push. Its strength is clearing several
+      threats without breaking your flow.
     speakerPosePrefab: {fileID: 2736272047063480907, guid: 9804a0ccb68c4404f9d2f5dce9c70874, type: 3}
   - speakerName: Blue Guy
-    text: Clear the sseven targets ahead to open the first gate.
+    text: Clear the seven targets ahead to open the first gate.
     speakerPosePrefab: {fileID: 2736272047063480907, guid: a6dce48185b1cf24fb9f542767adc9c2, type: 3}
   playOnStart: 1
   hidePoseOnEnd: 1

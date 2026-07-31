@@ -46,13 +46,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RunGun.Levels.TutorialDialogueController
   lines:
   - speakerName: Blue Man
-    text: Hey, buddy! Let me quickly bring you up to speed.
+    text: Welcome, recruit. You are training to join the Space Delivery Corps.
     speakerPosePrefab: {fileID: 2736272047063480907, guid: a6dce48185b1cf24fb9f542767adc9c2, type: 3}
   - speakerName: Blue Man
-    text: We'll start with basic movement. Use WASD to move and SPACE to jump.
+    text: Couriers cross dangerous places where normal deliveries cannot go. Start
+      with the basics. Use WASD to move and SPACE to jump.
     speakerPosePrefab: {fileID: 2736272047063480907, guid: a6dce48185b1cf24fb9f542767adc9c2, type: 3}
   - speakerName: Blue Man
-    text: Once you reach the next platform, we'll continue. See you there!
+    text: This course hangs in open space, but the training recovery system is active.
+      If you fall, it will return you to your latest checkpoint.
     speakerPosePrefab: {fileID: 2736272047063480907, guid: ca5a1075237da5545b10438e8106affd, type: 3}
   playOnStart: 1
   hidePoseOnEnd: 1

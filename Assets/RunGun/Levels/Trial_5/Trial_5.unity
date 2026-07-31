@@ -1850,13 +1850,13 @@ PrefabInstance:
       objectReference: {fileID: 1766479202}
     - target: {fileID: 5049179920515150489, guid: 1f3b636a8cd800c48a76acb1321d21a5, type: 3}
       propertyPath: lines.Array.data[0].text
-      value: Now use the explosion for movement. Jump, look down and slightly behind
-        you, then fire at the orange plate.
+      value: Now use the blast for movement. Jump, look down and slightly behind
+        you, then fire.
       objectReference: {fileID: 0}
     - target: {fileID: 5049179920515150489, guid: 1f3b636a8cd800c48a76acb1321d21a5, type: 3}
       propertyPath: lines.Array.data[1].text
-      value: The blast pushes you away from its impact point. Keep holding forward
-        in the air and land on the platform above.
+      value: The blast pushes you away from its impact point. Hold forward in the
+        air and land on the platform above.
       objectReference: {fileID: 0}
     - target: {fileID: 5049179920515150489, guid: 1f3b636a8cd800c48a76acb1321d21a5, type: 3}
       propertyPath: lines.Array.data[0].speakerName
@@ -2643,18 +2643,17 @@ PrefabInstance:
       objectReference: {fileID: 1766479202}
     - target: {fileID: 8750438153327570425, guid: a1d62352de881404ea6452e7cc754692, type: 3}
       propertyPath: lines.Array.data[0].text
-      value: This trial introduces the bazooka. It carries one rocket, but no other
-        weapon can match its impact.
+      value: Heavy cargo routes may require the bazooka. It carries one rocket, but
+        no other courier weapon can match its impact.
       objectReference: {fileID: 0}
     - target: {fileID: 8750438153327570425, guid: a1d62352de881404ea6452e7cc754692, type: 3}
       propertyPath: lines.Array.data[1].text
-      value: Fire at the red reinforced wall ahead. The wall only reacts to heavy
-        impact, so the bazooka is the right tool.
+      value: Fire at the reinforced grid ahead. Only a heavy impact can breach this
+        training barrier.
       objectReference: {fileID: 0}
     - target: {fileID: 8750438153327570425, guid: a1d62352de881404ea6452e7cc754692, type: 3}
       propertyPath: lines.Array.data[2].text
-      value: The rocket takes a moment to reach its target. Start reloading as you
-        continue forward.
+      value: Rockets take time to travel. Start reloading while you continue forward.
       objectReference: {fileID: 0}
     - target: {fileID: 8750438153327570425, guid: a1d62352de881404ea6452e7cc754692, type: 3}
       propertyPath: lines.Array.data[0].speakerName
@@ -3114,12 +3113,12 @@ PrefabInstance:
       objectReference: {fileID: 1766479202}
     - target: {fileID: 1184832910463638114, guid: 6c962b04d62a15e4586701a80e5df3c7, type: 3}
       propertyPath: lines.Array.data[0].text
-      value: A bazooka can also redirect you in mid-air.
+      value: A trained Corps courier can also use a bazooka to redirect in mid-air.
       objectReference: {fileID: 0}
     - target: {fileID: 1184832910463638114, guid: 6c962b04d62a15e4586701a80e5df3c7, type: 3}
       propertyPath: lines.Array.data[1].text
-      value: Jump forward and fire at the orange plate on the left wall. Its explosion
-        will push you right toward the next platform.
+      value: Jump forward and fire at the platform on the left. Its blast will push
+        you right toward the next platform.
       objectReference: {fileID: 0}
     - target: {fileID: 1184832910463638114, guid: 6c962b04d62a15e4586701a80e5df3c7, type: 3}
       propertyPath: lines.Array.data[0].speakerName
@@ -5464,12 +5463,12 @@ PrefabInstance:
       objectReference: {fileID: 1766479202}
     - target: {fileID: 5049179920515150489, guid: 1f3b636a8cd800c48a76acb1321d21a5, type: 3}
       propertyPath: lines.Array.data[0].text
-      value: For the final chain, destroy the reinforced wall and reload while running.
+      value: Final sequence. Breach the reinforced grid and reload while running.
       objectReference: {fileID: 0}
     - target: {fileID: 5049179920515150489, guid: 1f3b636a8cd800c48a76acb1321d21a5, type: 3}
       propertyPath: lines.Array.data[1].text
-      value: At the edge, jump and fire at the orange plate behind. The blast will
-        carry you toward the finish.
+      value: At the edge, jump and fire at the platform behind you. Ride the blast
+        toward the finish.
       objectReference: {fileID: 0}
     - target: {fileID: 5049179920515150489, guid: 1f3b636a8cd800c48a76acb1321d21a5, type: 3}
       propertyPath: lines.Array.data[0].speakerName
@@ -5481,7 +5480,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5503822562900041323, guid: 1f3b636a8cd800c48a76acb1321d21a5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 13.5
+      value: 5.55
       objectReference: {fileID: 0}
     - target: {fileID: 5503822562900041323, guid: 1f3b636a8cd800c48a76acb1321d21a5, type: 3}
       propertyPath: m_LocalPosition.y
@@ -5489,7 +5488,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5503822562900041323, guid: 1f3b636a8cd800c48a76acb1321d21a5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 82
+      value: 74.63
       objectReference: {fileID: 0}
     - target: {fileID: 5503822562900041323, guid: 1f3b636a8cd800c48a76acb1321d21a5, type: 3}
       propertyPath: m_LocalRotation.w

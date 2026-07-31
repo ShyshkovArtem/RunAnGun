@@ -511,7 +511,7 @@ namespace RunGun.Weapons
 
             reloadAudioSource.Stop();
             reloadAudioSource.clip = weapon.reloadClip;
-            reloadAudioSource.volume = weapon.reloadVolume;
+            GameSettings.SetSfxSourceVolume(reloadAudioSource, weapon.reloadVolume);
             reloadAudioSource.pitch = weapon.reloadPitch;
             reloadAudioSource.Play();
         }

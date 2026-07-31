@@ -130,6 +130,11 @@ namespace RunGun.Settings
             ShowTab("CrosshairPanel");
         }
 
+        public void ShowLanguageTab()
+        {
+            ShowTab("LanguagePanel");
+        }
+
         private void ShowTab(string activePanelName)
         {
             if (_tabPanels.Count == 0)
@@ -159,12 +164,14 @@ namespace RunGun.Settings
                     case "AudioPanel":
                     case "ControlsPanel":
                     case "CrosshairPanel":
+                    case "LanguagePanel":
                         _tabPanels[descendant.name] = descendant.gameObject;
                         break;
                     case "DisplayBtn":
                     case "AudioBtn":
                     case "ControlsBtn":
                     case "CrosshairBtn":
+                    case "LanguageBtn":
                         Button button = descendant.GetComponent<Button>();
                         if (button != null)
                             _tabButtons[descendant.name] = button;
@@ -179,6 +186,7 @@ namespace RunGun.Settings
             BindTabButton("AudioBtn", ShowAudioTab);
             BindTabButton("ControlsBtn", ShowControlsTab);
             BindTabButton("CrosshairBtn", ShowCrosshairTab);
+            BindTabButton("LanguageBtn", ShowLanguageTab);
         }
 
         private void BindTabButton(string objectName, UnityAction action)

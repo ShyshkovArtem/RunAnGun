@@ -1,0 +1,346 @@
+﻿%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80fc8906df544becbc5fa27ea1b8b41f, type: 3}
+  m_Name: EnglishLocalization
+  m_EditorClassIdentifier: Assembly-CSharp::RunGun.Settings.LocalizationTable
+  language: 0
+  entries:
+  - key: SETTINGS
+    text: SETTINGS
+  - key: DISPLAY
+    text: DISPLAY
+  - key: Display
+    text: Display
+  - key: AUDIO
+    text: AUDIO
+  - key: CONTROLS
+    text: CONTROLS
+  - key: CROSSHAIR
+    text: CROSSHAIR
+  - key: LANGUAGE
+    text: LANGUAGE
+  - key: RESOLUTION
+    text: RESOLUTION
+  - key: WINDOW MODE
+    text: WINDOW MODE
+  - key: Borderless
+    text: Borderless
+  - key: Exclusive Fullscreen
+    text: Exclusive Fullscreen
+  - key: Windowed
+    text: Windowed
+  - key: MUSIC VOLUME
+    text: MUSIC VOLUME
+  - key: SFX VOLUME
+    text: SFX VOLUME
+  - key: MOUSE SENSITIVITY
+    text: MOUSE SENSITIVITY
+  - key: KEY BINDINGS
+    text: KEY BINDINGS
+  - key: MOVE FORWARD
+    text: MOVE FORWARD
+  - key: MOVE BACKWARD
+    text: MOVE BACKWARD
+  - key: MOVE LEFT
+    text: MOVE LEFT
+  - key: MOVE RIGHT
+    text: MOVE RIGHT
+  - key: JUMP
+    text: JUMP
+  - key: SPRINT
+    text: SPRINT
+  - key: CROUCH / SLIDE
+    text: CROUCH / SLIDE
+  - key: RELOAD
+    text: RELOAD
+  - key: RESET TO DEFAULT
+    text: RESET TO DEFAULT
+  - key: APPEARANCE
+    text: APPEARANCE
+  - key: STYLE
+    text: STYLE
+  - key: COLOR
+    text: COLOR
+  - key: SIZE
+    text: SIZE
+  - key: OPACITY
+    text: OPACITY
+  - key: LIVE PREVIEW
+    text: LIVE PREVIEW
+  - key: DOT
+    text: DOT
+  - key: CLASSIC
+    text: CLASSIC
+  - key: CIRCLE
+    text: CIRCLE
+  - key: CROSS
+    text: CROSS
+  - key: WHITE
+    text: WHITE
+  - key: RED
+    text: RED
+  - key: CYAN
+    text: CYAN
+  - key: GREEN
+    text: GREEN
+  - key: YELLOW
+    text: YELLOW
+  - key: MAGENTA
+    text: MAGENTA
+  - key: CHANGES ARE APPLIED IMMEDIATELY
+    text: CHANGES ARE APPLIED IMMEDIATELY
+  - key: CHANGES ARE SAVED AUTOMATICALLY
+    text: CHANGES ARE SAVED AUTOMATICALLY
+  - key: RIGHT NOW ONLY 1920x1080 resolution is supported. later it will be chabged
+    text: RIGHT NOW ONLY 1920x1080 resolution is supported. later it will be chabged
+  - key: This is an early development build. Gameplay, levels, models, textures,
+      audio, and balancing are still works in progress. Expect bugs, unfinished content,
+      and significant changes in future versions. Thank you for playing!
+    text: This is an early development build. Gameplay, levels, models, textures,
+      audio, and balancing are still works in progress. Expect bugs, unfinished content,
+      and significant changes in future versions. Thank you for playing!
+  - key: LEVEL SELECT
+    text: LEVEL SELECT
+  - key: TRIALS
+    text: TRIALS
+  - key: LEVELS
+    text: LEVELS
+  - key: Trials
+    text: Trials
+  - key: Levels
+    text: Levels
+  - key: COMING SOON
+    text: COMING SOON
+  - key: START
+    text: START
+  - key: FINAL TEST
+    text: FINAL TEST
+  - key: LICENSE TEST
+    text: LICENSE TEST
+  - key: MOVEMENT
+    text: MOVEMENT
+  - key: Trial 1 Move
+    text: Trial 1 Move
+  - key: Trial 2 - Shoot
+    text: Trial 2 - Shoot
+  - key: Trial 3 - Shotgun
+    text: Trial 3 - Shotgun
+  - key: Trial 4 - Rifle & Slide
+    text: Trial 4 - Rifle & Slide
+  - key: Trial 5 - Heavy Lift
+    text: Trial 5 - Heavy Lift
+  - key: Final Trial
+    text: Final Trial
+  - key: EXIT
+    text: EXIT
+  - key: PAUSED
+    text: PAUSED
+  - key: Continue
+    text: Continue
+  - key: Retry
+    text: Retry
+  - key: Menu
+    text: Menu
+  - key: TRIAL COMPLETED
+    text: TRIAL COMPLETED
+  - key: COMPLETE
+    text: COMPLETE
+  - key: YOUR TIME
+    text: YOUR TIME
+  - key: BEST TIME
+    text: BEST TIME
+  - key: NEW RECORD
+    text: NEW RECORD
+  - key: RANK REQUIREMENTS
+    text: RANK REQUIREMENTS
+  - key: IMPOSSIBLE
+    text: IMPOSSIBLE
+  - key: GOLD
+    text: GOLD
+  - key: SILVER
+    text: SILVER
+  - key: BRONZE
+    text: BRONZE
+  - key: Impossible
+    text: Impossible
+  - key: Gold
+    text: Gold
+  - key: Silver
+    text: Silver
+  - key: Bronze
+    text: Bronze
+  - key: press Enter
+    text: press Enter
+  - key: Movement
+    text: Movement
+  - key: Targets
+    text: Targets
+  - key: Shotgun
+    text: Shotgun
+  - key: Rifle + Slide
+    text: Rifle + Slide
+  - key: Bazooka
+    text: Bazooka
+  - key: License Test
+    text: License Test
+  - key: Begin Corps training with movement, jumping, and checkpoints.
+    text: Begin Corps training with movement, jumping, and checkpoints.
+  - key: Qualify with the pistol and clear moving training targets.
+    text: Qualify with the pistol and clear moving training targets.
+  - key: Turn shotgun recoil into a movement tool.
+    text: Turn shotgun recoil into a movement tool.
+  - key: Combine rifle control, sliding, and courier momentum.
+    text: Combine rifle control, sliding, and courier momentum.
+  - key: Breach barriers and redirect yourself with explosive force.
+    text: Breach barriers and redirect yourself with explosive force.
+  - key: Pass the timed exam and earn your Space Delivery Corps license.
+    text: Pass the timed exam and earn your Space Delivery Corps license.
+  - key: Blue Man
+    text: Blue Man
+  - key: Blue Guy
+    text: Blue Guy
+  - key: Welcome, recruit. You are training to join the Space Delivery Corps.
+    text: Welcome, recruit. You are training to join the Space Delivery Corps.
+  - key: Couriers cross dangerous places where normal deliveries cannot go. Start
+      with the basics. Use WASD to move and SPACE to jump.
+    text: Couriers cross dangerous places where normal deliveries cannot go. Start
+      with the basics. Use WASD to move and SPACE to jump.
+  - key: This course hangs in open space, but the training recovery system is active.
+      If you fall, it will return you to your latest checkpoint.
+    text: This course hangs in open space, but the training recovery system is active.
+      If you fall, it will return you to your latest checkpoint.
+  - key: Checkpoint confirmed. Your training record has been updated.
+    text: Checkpoint confirmed. Your training record has been updated.
+  - key: Next is sprinting. Hold SHIFT while moving to build the speed a field courier
+      needs.
+    text: Next is sprinting. Hold SHIFT while moving to build the speed a field courier
+      needs.
+  - key: Use a sprint jump to clear the gap ahead. Trust the recovery system if you
+      miss.
+    text: Use a sprint jump to clear the gap ahead. Trust the recovery system if
+      you miss.
+  - key: Good work, recruit. One movement section remains.
+    text: Good work, recruit. One movement section remains.
+  - key: Cross the three platforms ahead and reach the trial exit.
+    text: Cross the three platforms ahead and reach the trial exit.
+  - key: Complete this course and report to weapons training. A licensed courier
+      must be ready for hostile delivery zones.
+    text: Complete this course and report to weapons training. A licensed courier
+      must be ready for hostile delivery zones.
+  - key: Welcome to weapons training. Your first courier sidearm is the pistol.
+    text: Welcome to weapons training. Your first courier sidearm is the pistol.
+  - key: Shoot all six targets to verify your aim and activate the next platform.
+    text: Shoot all six targets to verify your aim and activate the next platform.
+  - key: Static target calibration complete. Now prove you can aim under pressure.
+    text: Static target calibration complete. Now prove you can aim under pressure.
+  - key: Land on the platform and shoot all three moving targets before they reach
+      the end. If one escapes, the training sequence resets.
+    text: Land on the platform and shoot all three moving targets before they reach
+      the end. If one escapes, the training sequence resets.
+  - key: Pass this section and the next course will teach you how weapons can control
+      your movement.
+    text: Pass this section and the next course will teach you how weapons can control
+      your movement.
+  - key: In real delivery zones, your weapon is more than protection. Recoil can
+      become a movement tool.
+    text: In real delivery zones, your weapon is more than protection. Recoil can
+      become a movement tool.
+  - key: Every weapon applies a different amount of force. Learning that force can
+      keep a courier alive.
+    text: Every weapon applies a different amount of force. Learning that force can
+      keep a courier alive.
+  - key: This course uses the shotgun. Jump and fire at the ground beneath you to
+      boost upward.
+    text: This course uses the shotgun. Jump and fire at the ground beneath you to
+      boost upward.
+  - key: Remember this before you enter a live delivery zone.
+    text: Remember this before you enter a live delivery zone.
+  - key: The shotgun gives you a stronger push when you fire at a nearby surface
+      than when you fire into open space.
+    text: The shotgun gives you a stronger push when you fire at a nearby surface
+      than when you fire into open space.
+  - key: Use that extra force to reach the next platform.
+    text: Use that extra force to reach the next platform.
+  - key: Good. Now combine weapon handling with movement.
+    text: Good. Now combine weapon handling with movement.
+  - key: Use the pistol to clear the targets and activate the platform.
+    text: Use the pistol to clear the targets and activate the platform.
+  - key: Then use the shotgun to reach the finish. Face away from it, move BACKWARD,
+      and fire to push yourself toward the exit.
+    text: Then use the shotgun to reach the finish. Face away from it, move BACKWARD,
+      and fire to push yourself toward the exit.
+  - key: This trial adds the rifle, the Corps standard for sustained fire. Keep moving
+      while you clear groups of targets.
+    text: This trial adds the rifle, the Corps standard for sustained fire. Keep
+      moving while you clear groups of targets.
+  - key: Its recoil gives only a small movement push. Its strength is clearing several
+      threats without breaking your flow.
+    text: Its recoil gives only a small movement push. Its strength is clearing several
+      threats without breaking your flow.
+  - key: Clear the seven targets ahead to open the first gate.
+    text: Clear the seven targets ahead to open the first gate.
+  - key: Fast deliveries demand control in tight spaces. Hold LEFT CTRL while moving
+      downhill to begin a slide.
+    text: Fast deliveries demand control in tight spaces. Hold LEFT CTRL while moving
+      downhill to begin a slide.
+  - key: Stay low beneath the gate, then jump from the runway to carry your speed
+      across the gap.
+    text: Stay low beneath the gate, then jump from the runway to carry your speed
+      across the gap.
+  - key: Now combine both lessons. Shoot every moving target while sliding through
+      the final lane.
+    text: Now combine both lessons. Shoot every moving target while sliding through
+      the final lane.
+  - key: The finish gate opens when the last target falls. Reach it without losing
+      your courier momentum.
+    text: The finish gate opens when the last target falls. Reach it without losing
+      your courier momentum.
+  - key: Heavy cargo routes may require the bazooka. It carries one rocket, but no
+      other courier weapon can match its impact.
+    text: Heavy cargo routes may require the bazooka. It carries one rocket, but
+      no other courier weapon can match its impact.
+  - key: Fire at the reinforced red wall ahead. Only a heavy impact can breach this
+      training barrier.
+    text: Fire at the reinforced red wall ahead. Only a heavy impact can breach this
+      training barrier.
+  - key: Rockets take time to travel. Start reloading while you continue forward.
+    text: Rockets take time to travel. Start reloading while you continue forward.
+  - key: Now use the blast for movement. Jump, look down and slightly behind you,
+      then fire at the orange training plate.
+    text: Now use the blast for movement. Jump, look down and slightly behind you,
+      then fire at the orange training plate.
+  - key: The blast pushes you away from its impact point. Hold forward in the air
+      and land on the platform above.
+    text: The blast pushes you away from its impact point. Hold forward in the air
+      and land on the platform above.
+  - key: A trained Corps courier can also use a bazooka to redirect in mid-air.
+    text: A trained Corps courier can also use a bazooka to redirect in mid-air.
+  - key: Jump forward and fire at the orange plate on the left wall. Its blast will
+      push you right toward the next platform.
+    text: Jump forward and fire at the orange plate on the left wall. Its blast will
+      push you right toward the next platform.
+  - key: Final sequence. Breach the reinforced wall and reload while running.
+    text: Final sequence. Breach the reinforced wall and reload while running.
+  - key: At the edge, jump and fire at the orange plate behind you. Ride the blast
+      toward the finish.
+    text: At the edge, jump and fire at the orange plate behind you. Ride the blast
+      toward the finish.
+  - key: Recruit, this is your Space Delivery Corps licensing exam. Cross the start
+      line to begin the timer, then use everything you learned to reach the finish.
+      Pass this test and your courier license will unlock real delivery assignments.
+      Training recovery remains active here; outside this facility, it will not save
+      you.
+    text: Recruit, this is your Space Delivery Corps licensing exam. Cross the start
+      line to begin the timer, then use everything you learned to reach the finish.
+      Pass this test and your courier license will unlock real delivery assignments.
+      Training recovery remains active here; outside this facility, it will not save
+      you.

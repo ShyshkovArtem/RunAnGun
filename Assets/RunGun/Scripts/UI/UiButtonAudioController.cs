@@ -265,7 +265,8 @@ namespace RunGun.UI
 
         private static bool IsSettingsTab(Button button)
         {
-            return button.name is "DisplayBtn" or "AudioBtn" or "ControlsBtn" or "CrosshairBtn";
+            return button.name is "DisplayBtn" or "AudioBtn" or "ControlsBtn"
+                or "CrosshairBtn" or "LanguageBtn";
         }
 
         [ContextMenu("Refresh Button Bindings")]

@@ -133,8 +133,7 @@ namespace RunGun.Settings
                 NormalBorderColor = border != null ? border.color : Color.white
             };
 
-            if (choice.Label != null)
-                choice.Label.text = labelText;
+            GameLocalization.SetText(choice.Label, labelText);
 
             if (choice.Icon != null)
             {

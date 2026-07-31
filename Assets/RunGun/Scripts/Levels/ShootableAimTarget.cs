@@ -1,3 +1,4 @@
+using RunGun.Settings;
 using RunGun.Weapons;
 using UnityEngine;
 using UnityEngine.Events;
@@ -154,7 +155,7 @@ namespace RunGun.Levels
 
             var audioSource = audioObject.AddComponent<AudioSource>();
             audioSource.clip = hitClip;
-            audioSource.volume = hitVolume;
+            GameSettings.SetSfxSourceVolume(audioSource, hitVolume);
             audioSource.pitch = hitPitch;
             audioSource.spatialBlend = 1f;
             audioSource.rolloffMode = AudioRolloffMode.Linear;

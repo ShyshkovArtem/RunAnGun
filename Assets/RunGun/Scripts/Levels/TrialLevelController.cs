@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using ElmanGameDevTools.PlayerSystem;
+using RunGun.Settings;
 using RunGun.Weapons;
 using TMPro;
 using UnityEngine;
@@ -264,7 +265,7 @@ namespace RunGun.Levels
             for (int i = 0; i < _levelTexts.Count; i++)
             {
                 if (_levelTexts[i] != null)
-                    _levelTexts[i].text = displayName;
+                    GameLocalization.SetText(_levelTexts[i], displayName);
             }
         }
 

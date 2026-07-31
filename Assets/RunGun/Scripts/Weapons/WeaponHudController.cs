@@ -348,10 +348,12 @@ namespace RunGun.Weapons
             reloadCircle.type = Image.Type.Filled;
             reloadCircle.fillMethod = Image.FillMethod.Radial360;
             reloadCircle.fillAmount = 0f;
+            _lastReloadFill = -1f;
 
             if (hideReloadCircleWhenIdle)
             {
                 reloadCircleRoot.SetActive(false);
+                _lastReloadVisible = false;
             }
         }
 
@@ -375,6 +377,9 @@ namespace RunGun.Weapons
                 _lastReloadVisible = reloading;
             }
 
+            // Other HUD customization must not leave the progress image disabled.
+            reloadCircle.enabled = reloading;
+
             float fillAmount = reloading ? weaponController.ReloadProgress : 0f;
             if (!Mathf.Approximately(_lastReloadFill, fillAmount))
             {
@@ -382,10 +387,6 @@ namespace RunGun.Weapons
                 _lastReloadFill = fillAmount;
             }
 
-            if (!hideReloadCircleWhenIdle)
-            {
-                reloadCircle.enabled = reloading;
-            }
         }
 
         private WeaponSlotView CreateSlot(WeaponType type)

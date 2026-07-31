@@ -46,15 +46,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RunGun.Levels.TutorialDialogueController
   lines:
   - speakerName: Blue Guy
-    text: Hello! You may have already noticed that the pistol pushes you when you fire.
+    text: In real delivery zones, your weapon is more than protection. Recoil can
+      become a movement tool.
     speakerPosePrefab: {fileID: 2736272047063480907, guid: 9804a0ccb68c4404f9d2f5dce9c70874, type: 3}
   - speakerName: Blue Guy
-    text: Every weapon can affect your movement, but each one applies a different
-      amount of force.
+    text: Every weapon applies a different amount of force. Learning that force can
+      keep a courier alive.
     speakerPosePrefab: {fileID: 2736272047063480907, guid: a6dce48185b1cf24fb9f542767adc9c2, type: 3}
   - speakerName: Blue Guy
-    text: In this trial, you'll learn to use the shotgun for movement. First, try
-      jumping and shooting the ground beneath you.
+    text: This course uses the shotgun. Jump and fire at the ground beneath you to
+      boost upward.
     speakerPosePrefab: {fileID: 2736272047063480907, guid: 9804a0ccb68c4404f9d2f5dce9c70874, type: 3}
   playOnStart: 1
   hidePoseOnEnd: 1

@@ -30,8 +30,8 @@ namespace RunGun.Settings
         private const float BaseLookSensitivity = 0.08f;
         private const float MinimumSensitivity = 0.1f;
         private const float MaximumSensitivity = 5f;
-        private const int DefaultCrosshairStyle = 3;
-        private const float DefaultCrosshairSize = 1.5f;
+        private const int DefaultCrosshairStyle = 1;
+        private const float DefaultCrosshairSize = 1.2f;
         private const float DefaultCrosshairOpacity = 1f;
         private const int DefaultCrosshairColor = 3;
         private static readonly Dictionary<GameAction, Key> Defaults = new()
@@ -218,6 +218,15 @@ namespace RunGun.Settings
             AudioSettingsRuntime.ApplyNow();
         }
 
+        public static void SetSfxSourceVolume(AudioSource source, float baseVolume)
+        {
+            if (source == null)
+                return;
+
+            AudioSettingsRuntime.EnsureExists();
+            AudioSettingsRuntime.SetSourceBaseVolume(source, Mathf.Clamp01(baseVolume));
+        }
+
         private static float SnapToStep(float value, float step, float minimum, float maximum)
         {
             return Mathf.Clamp(Mathf.Round(value / step) * step, minimum, maximum);
@@ -254,6 +263,15 @@ namespace RunGun.Settings
             if (_instance == null)
                 return;
             _instance.RefreshSources();
+        }
+
+        public static void SetSourceBaseVolume(AudioSource source, float baseVolume)
+        {
+            if (_instance == null || source == null)
+                return;
+
+            _instance._baseVolumes[source] = baseVolume;
+            source.volume = baseVolume * GameSettings.SfxVolume;
         }
 
         private void OnEnable()
@@ -347,12 +365,6 @@ namespace RunGun.Settings
                 rect.localScale = Vector3.one;
                 rect.sizeDelta = Vector2.one * BaseSize * GameSettings.CrosshairSize;
 
-                Graphic[] legacyGraphics = rect.GetComponentsInChildren<Graphic>(true);
-                for (int j = 0; j < legacyGraphics.Length; j++)
-                {
-                    if (legacyGraphics[j] != images[i])
-                        legacyGraphics[j].enabled = false;
-                }
             }
         }
 

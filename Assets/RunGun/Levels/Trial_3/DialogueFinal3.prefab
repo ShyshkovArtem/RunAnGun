@@ -47,14 +47,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RunGun.Levels.TutorialDialogueController
   lines:
   - speakerName: Blue Guy
-    text: Nice, you made it here!
+    text: Good. Now combine weapon handling with movement.
     speakerPosePrefab: {fileID: 7654791619888061114, guid: 1336c22a2ea74af42961e46ed56d15ae, type: 3}
   - speakerName: Blue Guy
-    text: Use the pistol to shoot the targets and activate the platform.
+    text: Use the pistol to clear the targets and activate the platform.
     speakerPosePrefab: {fileID: 2736272047063480907, guid: a6dce48185b1cf24fb9f542767adc9c2, type: 3}
   - speakerName: Blue Guy
-    text: Then use the shotgun to reach the finish. Here's a hint. Face away from
-      the finish, move BACKWARD, and fire to push yourself toward it!
+    text: Then use the shotgun to reach the finish. Face away from it, move BACKWARD,
+      and fire to push yourself toward the exit.
     speakerPosePrefab: {fileID: 2736272047063480907, guid: ca5a1075237da5545b10438e8106affd, type: 3}
   playOnStart: 1
   hidePoseOnEnd: 1

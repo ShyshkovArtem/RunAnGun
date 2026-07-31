@@ -15269,9 +15269,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RunGun.Levels.TutorialDialogueController
   lines:
   - speakerName: Blue Man
-    text: "This is your final trial. Cross the start line to begin the timer, then
-      reach the finish as fast as you can. Your time determines your rank, so show
-      me you\u2019re ready for the real levels ahead."
+    text: 'Recruit, this is your Space Delivery Corps licensing exam. Cross the start
+      line to begin the timer, then use everything you learned to reach the finish.
+      Pass this test and your courier license will unlock real delivery assignments.
+      Training recovery remains active here. '
     speakerPosePrefab: {fileID: 2736272047063480907, guid: a6dce48185b1cf24fb9f542767adc9c2, type: 3}
   playOnStart: 1
   hidePoseOnEnd: 1

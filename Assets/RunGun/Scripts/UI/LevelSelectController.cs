@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using RunGun.Levels;
+using RunGun.Settings;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -22,6 +23,7 @@ namespace RunGun.UI
             private readonly TMP_Text _timeText;
             private readonly Image _statusIcon;
             private readonly Image _border;
+            private readonly List<Image> _selectionLines = new();
             private readonly Button _button;
             private LevelSelectCatalog.LevelDefinition _definition;
 
@@ -42,6 +44,19 @@ namespace RunGun.UI
                 _button.transition = Selectable.Transition.None;
                 _button.targetGraphic = root.GetComponent<Graphic>();
                 _button.onClick.AddListener(Select);
+
+                Image[] images = root.GetComponentsInChildren<Image>(true);
+                for (int i = 0; i < images.Length; i++)
+                {
+                    Image image = images[i];
+                    if (image != null &&
+                        image != _border &&
+                        image != _statusIcon &&
+                        image.gameObject != root.gameObject)
+                    {
+                        _selectionLines.Add(image);
+                    }
+                }
             }
 
             public GameObject Root { get; }
@@ -64,8 +79,15 @@ namespace RunGun.UI
 
             public void SetSelected(bool selected)
             {
+                Color color = selected ? _owner.selectedColor : _owner.normalColor;
                 if (_border != null)
-                    _border.color = selected ? _owner.selectedColor : _owner.normalColor;
+                    _border.color = color;
+
+                for (int i = 0; i < _selectionLines.Count; i++)
+                {
+                    if (_selectionLines[i] != null)
+                        _selectionLines[i].color = color;
+                }
             }
 
             public void Dispose()
@@ -384,7 +406,7 @@ namespace RunGun.UI
             button.targetGraphic = target.GetComponent<Graphic>();
             _categoryButtons[categoryId] = button;
 
-            Transform border = FindChildRecursive(target, "SelectedBorder");
+            Transform border = FindChildRecursiveStartingWith(target, "SelectedBorder");
             if (border != null)
                 _categoryBorders[categoryId] = border.gameObject;
         }
@@ -432,8 +454,23 @@ namespace RunGun.UI
             _selectedCategory = category;
             SetText(_categoryTitle, category.DisplayName?.ToUpperInvariant());
 
-            foreach (KeyValuePair<string, GameObject> pair in _categoryBorders)
-                pair.Value.SetActive(string.Equals(pair.Key, category.Id, StringComparison.OrdinalIgnoreCase));
+            foreach (KeyValuePair<string, Button> pair in _categoryButtons)
+            {
+                bool selected = string.Equals(
+                    pair.Key, category.Id, StringComparison.OrdinalIgnoreCase);
+
+                TMP_Text label = pair.Value.GetComponentInChildren<TMP_Text>(true);
+                if (label != null)
+                    label.color = selected ? selectedColor : normalColor;
+
+                if (_categoryBorders.TryGetValue(pair.Key, out GameObject border))
+                {
+                    border.SetActive(selected);
+                    Image borderImage = border.GetComponent<Image>();
+                    if (borderImage != null)
+                        borderImage.color = selected ? selectedColor : normalColor;
+                }
+            }
 
             for (int i = 0; i < _levelRows.Count; i++)
             {
@@ -630,8 +667,7 @@ namespace RunGun.UI
 
         private static void SetText(TMP_Text text, string value)
         {
-            if (text != null)
-                text.text = value ?? string.Empty;
+            GameLocalization.SetText(text, value ?? string.Empty);
         }
 
         private static T FindChildComponent<T>(Transform root, string childName) where T : Component
@@ -652,6 +688,25 @@ namespace RunGun.UI
                     return child;
 
                 Transform found = FindChildRecursive(child, childName);
+                if (found != null)
+                    return found;
+            }
+
+            return null;
+        }
+
+        private static Transform FindChildRecursiveStartingWith(Transform root, string childName)
+        {
+            if (root == null)
+                return null;
+
+            for (int i = 0; i < root.childCount; i++)
+            {
+                Transform child = root.GetChild(i);
+                if (child.name.StartsWith(childName, StringComparison.Ordinal))
+                    return child;
+
+                Transform found = FindChildRecursiveStartingWith(child, childName);
                 if (found != null)
                     return found;
             }

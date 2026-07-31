@@ -18,7 +18,7 @@ MonoBehaviour:
     levels:
     - number: 01
       displayName: Movement
-      description: Learn the foundations of movement and reach the finish.
+      description: Begin Corps training with movement, jumping, and checkpoints.
       sceneName: Trial_1
       bestTimeId: Trial_1
       tracksTime: 1
@@ -26,7 +26,7 @@ MonoBehaviour:
       ranks: []
     - number: 02
       displayName: Targets
-      description: Shoot every target to open the route forward.
+      description: Qualify with the pistol and clear moving training targets.
       sceneName: Trial_2
       bestTimeId: Trial_2
       tracksTime: 1
@@ -34,7 +34,7 @@ MonoBehaviour:
       ranks: []
     - number: 03
       displayName: Shotgun
-      description: Use the shotgun to fight, move, and cross the course.
+      description: Turn shotgun recoil into a movement tool.
       sceneName: Trial_3
       bestTimeId: Trial_3
       tracksTime: 1
@@ -42,7 +42,7 @@ MonoBehaviour:
       ranks: []
     - number: 04
       displayName: Rifle + Slide
-      description: Combine rifle control, sliding, and carried momentum.
+      description: Combine rifle control, sliding, and courier momentum.
       sceneName: Trial_4
       bestTimeId: Trial_4
       tracksTime: 1
@@ -50,15 +50,15 @@ MonoBehaviour:
       ranks: []
     - number: 05
       displayName: Bazooka
-      description: Redirect yourself through the course with explosive force.
+      description: Breach barriers and redirect yourself with explosive force.
       sceneName: Trial_5
       bestTimeId: Trial_5
       tracksTime: 1
       usesTimedRanks: 0
       ranks: []
     - number: 06
-      displayName: Final Test
-      description: Prove every skill, complete the course, and beat the clock.
+      displayName: License Test
+      description: Pass the timed exam and earn your Space Delivery Corps license.
       sceneName: Trial_Final
       bestTimeId: TrialFinal
       timingDefinition: {fileID: 11400000, guid: b50f4e07f47b41be98f8742d3b5969de, type: 2}

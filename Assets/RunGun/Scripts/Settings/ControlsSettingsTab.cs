@@ -121,8 +121,7 @@ namespace RunGun.Settings
 
                 Transform labelObject = FindChildRecursive(row, "ActionLabel");
                 TMP_Text label = labelObject != null ? labelObject.GetComponent<TMP_Text>() : null;
-                if (label != null)
-                    label.text = definition.Label;
+                GameLocalization.SetText(label, definition.Label);
 
                 Transform keyObject = FindChildRecursive(row, "KeyButton");
                 Button button = keyObject != null ? keyObject.GetComponent<Button>() : null;
