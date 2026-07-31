@@ -243,17 +243,17 @@ namespace RunGun.Settings
             ["This course hangs in open space, but the training recovery system is active. If you fall, it will return you to your latest checkpoint."] = "And yes, that's open space below you. Fall off and recovery will pull you back to the last checkpoint. Probably with your dignity intact.",
             ["Checkpoint confirmed. Your training record has been updated."] = "Checkpoint locked! If space eats you, you're coming back here.",
             ["Next is sprinting. Hold SHIFT while moving to build the speed a field courier needs."] = "Walking is cute. Couriers run. Move and hold SHIFT to pick up speed.",
-            ["Use a sprint jump to clear the gap ahead. Trust the recovery system if you miss."] = "Sprint, jump, clear the gap. Miss it? Recovery gets to laugh first.",
+            ["Use a sprint jump to clear the gap ahead. Trust the recovery system if you miss."] = "Sprint, jump, clear the gap. Miss it? Recovery gets the first laugh, then brings you back.",
             ["Good work, recruit. One movement section remains."] = "Not bad, rookie. One last movement section.",
             ["Cross the three platforms ahead and reach the trial exit."] = "Three platforms, one exit. Keep moving and try not to admire the void.",
             ["Complete this course and report to weapons training. A licensed courier must be ready for hostile delivery zones."] = "Reach the exit and report to weapons training. Out there, some customers shoot before signing for the package.",
             ["Welcome to weapons training. Your first courier sidearm is the pistol."] = "Welcome to weapons training. Here's your pistol - the Corps' answer to rude customers.",
             ["Shoot all six targets to verify your aim and activate the next platform."] = "Drop all six targets and the next platform is yours. Nice and simple.",
-            ["Static target calibration complete. Now prove you can aim under pressure."] = "Stationary targets are easy. Let's see how you handle something that moves.",
+            ["Static target calibration complete. Now prove you can aim under pressure."] = "Hitting targets is easy without a time limit. Let's see how you handle the pressure.",
             ["Land on the platform and shoot all three moving targets before they reach the end. If one escapes, the training sequence resets."] = "Land on the platform and hit all three movers before they escape. Lose one and we reset the whole show.",
             ["Pass this section and the next course will teach you how weapons can control your movement."] = "Clear this and I'll show you the fun part: using guns to move yourself.",
             ["In real delivery zones, your weapon is more than protection. Recoil can become a movement tool."] = "Out there, a gun isn't just protection. Point it the right way and recoil becomes an engine.",
-            ["Every weapon applies a different amount of force. Learning that force can keep a courier alive."] = "Every gun kicks differently. Learn the kick and it might save your delivery - and your skin.",
+            ["Every weapon applies a different amount of force. Learning that force can keep a courier alive."] = "Every gun pushes differently. Learn the recoil and it might save your delivery - and your skin.",
             ["This course uses the shotgun. Jump and fire at the ground beneath you to boost upward."] = "Grab the shotgun. Jump, fire at the ground, and let recoil introduce you to flight.",
             ["Remember this before you enter a live delivery zone."] = "Remember this trick. Real delivery zones won't give you a practice run.",
             ["The shotgun gives you a stronger push when you fire at a nearby surface than when you fire into open space."] = "The closer the surface, the harder the shotgun throws you. Physics is finally being helpful.",
@@ -264,8 +264,8 @@ namespace RunGun.Settings
             ["This trial adds the rifle, the Corps standard for sustained fire. Keep moving while you clear groups of targets."] = "Meet the rifle: loud, fast, and very good at clearing a route. Keep moving while you work.",
             ["Its recoil gives only a small movement push. Its strength is clearing several threats without breaking your flow."] = "It won't launch you far, but it shreds targets without killing your momentum.",
             ["Clear the seven targets ahead to open the first gate."] = "Seven targets between you and the gate. Make them disappear.",
-            ["Fast deliveries demand control in tight spaces. Hold LEFT CTRL while moving downhill to begin a slide."] = "Tight route ahead. Move downhill and hold LEFT CTRL to slide under the trouble.",
-            ["Stay low beneath the gate, then jump from the runway to carry your speed across the gap."] = "Stay low under the gate, then jump from the runway and carry that speed across.",
+            ["Fast deliveries demand control in tight spaces. Hold LEFT CTRL while moving downhill to begin a slide."] = "Tight route ahead. Move downhill and hold LEFT CTRL to slide.",
+            ["Stay low beneath the gate, then jump from the runway to carry your speed across the gap."] = "Keep your head down, then use your speed to jump the gap.",
             ["Stay low, then jump from the runway to carry your speed across the gap and jump again in timing to keep momentum."] = "Stay low, launch from the runway, then time the next jump and keep that speed alive.",
             ["Now combine both lessons. Shoot every moving target while sliding through the final lane."] = "Final lane: slide fast, shoot faster, and don't let a single target escape.",
             ["The finish gate opens when the last target falls. Reach it without losing your courier momentum."] = "The last target opens the finish. Keep your speed and punch through.",
@@ -288,17 +288,17 @@ namespace RunGun.Settings
             ["This course hangs in open space, but the training recovery system is active. If you fall, it will return you to your latest checkpoint."] = "И да, внизу открытый космос. Сорвёшься - система вернёт тебя к последней точке. Возможно, даже вместе с достоинством.",
             ["Checkpoint confirmed. Your training record has been updated."] = "Точка сохранена! Если космос тебя съест, вернёшься сюда.",
             ["Next is sprinting. Hold SHIFT while moving to build the speed a field courier needs."] = "Ходить научились. Теперь побежали: двигайся и держи SHIFT, чтобы набрать скорость.",
-            ["Use a sprint jump to clear the gap ahead. Trust the recovery system if you miss."] = "Разгон, прыжок, перелёт. Не долетишь - система посмеётся первой.",
+            ["Use a sprint jump to clear the gap ahead. Trust the recovery system if you miss."] = "Разгон, прыжок, перелёт. Не долетишь - система посмеётся первой и вернет тебя.",
             ["Good work, recruit. One movement section remains."] = "Неплохо, новичок. Остался последний участок.",
             ["Cross the three platforms ahead and reach the trial exit."] = "Три платформы и один выход. Не засматривайся на космос.",
             ["Complete this course and report to weapons training. A licensed courier must be ready for hostile delivery zones."] = "Доберись до выхода и отправляйся к оружию. Некоторые клиенты стреляют раньше, чем подписывают доставку.",
             ["Welcome to weapons training. Your first courier sidearm is the pistol."] = "Добро пожаловать на стрельбище. Держи пистолет - ответ Корпуса на особо грубых клиентов.",
             ["Shoot all six targets to verify your aim and activate the next platform."] = "Сбей все шесть мишеней - и следующая платформа твоя. Всё просто.",
-            ["Static target calibration complete. Now prove you can aim under pressure."] = "По неподвижным попадать легко. Посмотрим, как справишься с движущимися.",
+            ["Static target calibration complete. Now prove you can aim under pressure."] = "Без ограничения по времени попадать легко. Посмотрим, как справишься под давлением.",
             ["Land on the platform and shoot all three moving targets before they reach the end. If one escapes, the training sequence resets."] = "Приземлись на платформу и сбей три мишени, пока не сбежали. Упустишь одну - начинаем шоу заново.",
             ["Pass this section and the next course will teach you how weapons can control your movement."] = "Пройди участок, и я покажу самое весёлое: как передвигаться с помощью оружия.",
             ["In real delivery zones, your weapon is more than protection. Recoil can become a movement tool."] = "На настоящем маршруте оружие не только защищает. Направь его правильно - и отдача станет двигателем.",
-            ["Every weapon applies a different amount of force. Learning that force can keep a courier alive."] = "Каждая пушка лягается по-своему. Запомни отдачу - она спасёт и груз, и твою шкуру.",
+            ["Every weapon applies a different amount of force. Learning that force can keep a courier alive."] = "Каждая пушка толкает по-своему. Запомни отдачу - она спасёт и груз, и твою шкуру.",
             ["This course uses the shotgun. Jump and fire at the ground beneath you to boost upward."] = "Бери дробовик. Прыгай, стреляй под ноги и знакомься с полётами.",
             ["Remember this before you enter a live delivery zone."] = "Запомни этот трюк. На реальном маршруте второй попытки могут не дать.",
             ["The shotgun gives you a stronger push when you fire at a nearby surface than when you fire into open space."] = "Чем ближе поверхность, тем сильнее дробовик тебя швырнёт. Хоть где-то физика помогает.",
@@ -309,8 +309,8 @@ namespace RunGun.Settings
             ["This trial adds the rifle, the Corps standard for sustained fire. Keep moving while you clear groups of targets."] = "Знакомься с винтовкой: громкая, быстрая и отлично расчищает путь. Только не стой на месте.",
             ["Its recoil gives only a small movement push. Its strength is clearing several threats without breaking your flow."] = "Далеко она тебя не запустит, зато быстро убирает мишени и не сбивает темп.",
             ["Clear the seven targets ahead to open the first gate."] = "Семь мишеней мешают открыть ворота. Исправь это.",
-            ["Fast deliveries demand control in tight spaces. Hold LEFT CTRL while moving downhill to begin a slide."] = "Впереди тесно. Двигайся вниз и держи LEFT CTRL, чтобы проскользнуть под проблемами.",
-            ["Stay low beneath the gate, then jump from the runway to carry your speed across the gap."] = "Не поднимай голову под воротами, а с разгона прыгай через разрыв.",
+            ["Fast deliveries demand control in tight spaces. Hold LEFT CTRL while moving downhill to begin a slide."] = "Впереди тесно. Двигайся вниз и держи LEFT CTRL, чтобы проскользнуть.",
+            ["Stay low beneath the gate, then jump from the runway to carry your speed across the gap."] = "Не поднимай голову, а с разгона прыгай через разрыв.",
             ["Stay low, then jump from the runway to carry your speed across the gap and jump again in timing to keep momentum."] = "Пригнись, вылетай с разгона и вовремя прыгай снова, чтобы не потерять скорость.",
             ["Now combine both lessons. Shoot every moving target while sliding through the final lane."] = "Финальная полоса: скользи быстро, стреляй ещё быстрее и никого не упусти.",
             ["The finish gate opens when the last target falls. Reach it without losing your courier momentum."] = "Последняя мишень откроет финиш. Не теряй скорость и прорывайся.",
@@ -328,6 +328,8 @@ namespace RunGun.Settings
 
         public static event Action LanguageChanged;
         public static IReadOnlyDictionary<string, string> DefaultRussianEntries => RussianDefaults;
+        public static IReadOnlyDictionary<string, string> EnglishDialogueEntries => EnglishDialogueTone;
+        public static IReadOnlyDictionary<string, string> RussianDialogueEntries => RussianDialogueTone;
 
         public static GameLanguage CurrentLanguage
         {
@@ -349,15 +351,15 @@ namespace RunGun.Settings
             if (string.IsNullOrEmpty(english))
                 return english;
 
-            if (TryGetDialogueTone(english, out string rewrittenDialogue))
-                return rewrittenDialogue;
-
             EnsureTablesLoaded();
             LocalizationTable table = CurrentLanguage == GameLanguage.Russian
                 ? _russianTable
                 : _englishTable;
             if (table != null)
                 return table.Get(english);
+
+            if (TryGetDialogueTone(english, out string rewrittenDialogue))
+                return rewrittenDialogue;
 
             if (CurrentLanguage == GameLanguage.Russian &&
                 RussianDefaults.TryGetValue(english, out string translated))
@@ -436,8 +438,9 @@ namespace RunGun.Settings
         {
             LocalizationTable table = GetCurrentTable();
             string value = source;
-            bool hasLocalizedEntry = TryGetDialogueTone(source, out value) ||
-                                     table != null && table.TryGet(source, out value);
+            bool hasLocalizedEntry = table != null && table.TryGet(source, out value);
+            if (!hasLocalizedEntry)
+                hasLocalizedEntry = TryGetDialogueTone(source, out value);
             text.text = hasLocalizedEntry ? value : Translate(source);
 
             if (CurrentLanguage == GameLanguage.Russian && hasLocalizedEntry)
@@ -464,8 +467,10 @@ namespace RunGun.Settings
         private static void Apply(Text text, string source)
         {
             LocalizationTable table = GetCurrentTable();
-            bool hasLocalizedEntry = TryGetDialogueTone(source, out string value) ||
-                                     table != null && table.TryGet(source, out value);
+            string value = source;
+            bool hasLocalizedEntry = table != null && table.TryGet(source, out value);
+            if (!hasLocalizedEntry)
+                hasLocalizedEntry = TryGetDialogueTone(source, out value);
             text.text = hasLocalizedEntry ? value : Translate(source);
         }
 

@@ -23,6 +23,7 @@ namespace RunGun.Settings
         }
 
         [SerializeField] private GameLanguage language;
+        [SerializeField, HideInInspector] private int contentVersion;
         [SerializeField] private List<Entry> entries = new();
 
         private Dictionary<string, Entry> _lookup;
@@ -54,6 +55,29 @@ namespace RunGun.Settings
             language = tableLanguage;
             entries = new List<Entry>(source);
             _lookup = null;
+        }
+
+        public bool ApplyTextOverrides(int version, IReadOnlyDictionary<string, string> overrides)
+        {
+            if (overrides == null || contentVersion >= version)
+                return false;
+
+            for (int i = 0; i < entries.Count; i++)
+            {
+                Entry entry = entries[i];
+                if (entry == null || string.IsNullOrEmpty(entry.key) ||
+                    !overrides.TryGetValue(entry.key, out string replacement) ||
+                    entry.text == replacement)
+                {
+                    continue;
+                }
+
+                entry.text = replacement;
+            }
+
+            contentVersion = version;
+            _lookup = null;
+            return true;
         }
 
         private void OnValidate()

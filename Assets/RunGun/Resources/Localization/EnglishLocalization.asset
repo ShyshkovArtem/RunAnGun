@@ -1,4 +1,4 @@
-﻿%YAML 1.1
+%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: EnglishLocalization
   m_EditorClassIdentifier: Assembly-CSharp::RunGun.Settings.LocalizationTable
   language: 0
+  contentVersion: 1
   entries:
   - key: SETTINGS
     text: SETTINGS
@@ -209,121 +210,118 @@ MonoBehaviour:
   - key: Blue Guy
     text: Blue Guy
   - key: Welcome, recruit. You are training to join the Space Delivery Corps.
-    text: Welcome, recruit. You are training to join the Space Delivery Corps.
+    text: Welcome aboard, rookie! Survive training and you might just earn a place
+      in the Space Delivery Corps.
   - key: Couriers cross dangerous places where normal deliveries cannot go. Start
       with the basics. Use WASD to move and SPACE to jump.
-    text: Couriers cross dangerous places where normal deliveries cannot go. Start
-      with the basics. Use WASD to move and SPACE to jump.
+    text: 'We deliver where sane people won''t. Let''s start easy: WASD to move,
+      SPACE to jump.'
   - key: This course hangs in open space, but the training recovery system is active.
       If you fall, it will return you to your latest checkpoint.
-    text: This course hangs in open space, but the training recovery system is active.
-      If you fall, it will return you to your latest checkpoint.
+    text: And yes, that's open space below you. Fall off and recovery will pull you
+      back to the last checkpoint. Probably with your dignity intact.
   - key: Checkpoint confirmed. Your training record has been updated.
-    text: Checkpoint confirmed. Your training record has been updated.
+    text: Checkpoint locked! If space eats you, you're coming back here.
   - key: Next is sprinting. Hold SHIFT while moving to build the speed a field courier
       needs.
-    text: Next is sprinting. Hold SHIFT while moving to build the speed a field courier
-      needs.
+    text: Walking is cute. Couriers run. Move and hold SHIFT to pick up speed.
   - key: Use a sprint jump to clear the gap ahead. Trust the recovery system if you
       miss.
-    text: Use a sprint jump to clear the gap ahead. Trust the recovery system if
-      you miss.
+    text: Sprint, jump, clear the gap. Miss it? Recovery gets the first laugh, then
+      brings you back.
   - key: Good work, recruit. One movement section remains.
-    text: Good work, recruit. One movement section remains.
+    text: Not bad, rookie. One last movement section.
   - key: Cross the three platforms ahead and reach the trial exit.
-    text: Cross the three platforms ahead and reach the trial exit.
+    text: Three platforms, one exit. Keep moving and try not to admire the void.
   - key: Complete this course and report to weapons training. A licensed courier
       must be ready for hostile delivery zones.
-    text: Complete this course and report to weapons training. A licensed courier
-      must be ready for hostile delivery zones.
+    text: Reach the exit and report to weapons training. Out there, some customers
+      shoot before signing for the package.
   - key: Welcome to weapons training. Your first courier sidearm is the pistol.
-    text: Welcome to weapons training. Your first courier sidearm is the pistol.
+    text: Welcome to weapons training. Here's your pistol - the Corps' answer to
+      rude customers.
   - key: Shoot all six targets to verify your aim and activate the next platform.
-    text: Shoot all six targets to verify your aim and activate the next platform.
+    text: Drop all six targets and the next platform is yours. Nice and simple.
   - key: Static target calibration complete. Now prove you can aim under pressure.
-    text: Static target calibration complete. Now prove you can aim under pressure.
+    text: Hitting targets is easy without a time limit. Let's see how you handle
+      the pressure.
   - key: Land on the platform and shoot all three moving targets before they reach
       the end. If one escapes, the training sequence resets.
-    text: Land on the platform and shoot all three moving targets before they reach
-      the end. If one escapes, the training sequence resets.
+    text: Land on the platform and hit all three movers before they escape. Lose
+      one and we reset the whole show.
   - key: Pass this section and the next course will teach you how weapons can control
       your movement.
-    text: Pass this section and the next course will teach you how weapons can control
-      your movement.
+    text: 'Clear this and I''ll show you the fun part: using guns to move yourself.'
   - key: In real delivery zones, your weapon is more than protection. Recoil can
       become a movement tool.
-    text: In real delivery zones, your weapon is more than protection. Recoil can
-      become a movement tool.
+    text: Out there, a gun isn't just protection. Point it the right way and recoil
+      becomes an engine.
   - key: Every weapon applies a different amount of force. Learning that force can
       keep a courier alive.
-    text: Every weapon applies a different amount of force. Learning that force can
-      keep a courier alive.
+    text: Every gun pushes differently. Learn the recoil and it might save your delivery
+      - and your skin.
   - key: This course uses the shotgun. Jump and fire at the ground beneath you to
       boost upward.
-    text: This course uses the shotgun. Jump and fire at the ground beneath you to
-      boost upward.
+    text: Grab the shotgun. Jump, fire at the ground, and let recoil introduce you
+      to flight.
   - key: Remember this before you enter a live delivery zone.
-    text: Remember this before you enter a live delivery zone.
+    text: Remember this trick. Real delivery zones won't give you a practice run.
   - key: The shotgun gives you a stronger push when you fire at a nearby surface
       than when you fire into open space.
-    text: The shotgun gives you a stronger push when you fire at a nearby surface
-      than when you fire into open space.
+    text: The closer the surface, the harder the shotgun throws you. Physics is finally
+      being helpful.
   - key: Use that extra force to reach the next platform.
-    text: Use that extra force to reach the next platform.
+    text: Use that kick and launch yourself to the next platform.
   - key: Good. Now combine weapon handling with movement.
-    text: Good. Now combine weapon handling with movement.
+    text: Good. Now let's mix shooting and movement - try to keep all limbs attached.
   - key: Use the pistol to clear the targets and activate the platform.
-    text: Use the pistol to clear the targets and activate the platform.
+    text: Clear the targets with the pistol and wake up that platform.
   - key: Then use the shotgun to reach the finish. Face away from it, move BACKWARD,
       and fire to push yourself toward the exit.
-    text: Then use the shotgun to reach the finish. Face away from it, move BACKWARD,
-      and fire to push yourself toward the exit.
+    text: Then switch to the shotgun. Face away from the exit, move BACKWARD, fire,
+      and ride the kick to the finish.
   - key: This trial adds the rifle, the Corps standard for sustained fire. Keep moving
       while you clear groups of targets.
-    text: This trial adds the rifle, the Corps standard for sustained fire. Keep
-      moving while you clear groups of targets.
+    text: 'Meet the rifle: loud, fast, and very good at clearing a route. Keep moving
+      while you work.'
   - key: Its recoil gives only a small movement push. Its strength is clearing several
       threats without breaking your flow.
-    text: Its recoil gives only a small movement push. Its strength is clearing several
-      threats without breaking your flow.
+    text: It won't launch you far, but it shreds targets without killing your momentum.
   - key: Clear the seven targets ahead to open the first gate.
-    text: Clear the seven targets ahead to open the first gate.
+    text: Seven targets between you and the gate. Make them disappear.
   - key: Fast deliveries demand control in tight spaces. Hold LEFT CTRL while moving
       downhill to begin a slide.
-    text: Fast deliveries demand control in tight spaces. Hold LEFT CTRL while moving
-      downhill to begin a slide.
+    text: Tight route ahead. Move downhill and hold LEFT CTRL to slide.
   - key: Stay low beneath the gate, then jump from the runway to carry your speed
       across the gap.
-    text: Stay low beneath the gate, then jump from the runway to carry your speed
-      across the gap.
+    text: Keep your head down, then use your speed to jump the gap.
   - key: Now combine both lessons. Shoot every moving target while sliding through
       the final lane.
-    text: Now combine both lessons. Shoot every moving target while sliding through
-      the final lane.
+    text: 'Final lane: slide fast, shoot faster, and don''t let a single target escape.'
   - key: The finish gate opens when the last target falls. Reach it without losing
       your courier momentum.
-    text: The finish gate opens when the last target falls. Reach it without losing
-      your courier momentum.
+    text: The last target opens the finish. Keep your speed and punch through.
   - key: Heavy cargo routes may require the bazooka. It carries one rocket, but no
       other courier weapon can match its impact.
-    text: Heavy cargo routes may require the bazooka. It carries one rocket, but
-      no other courier weapon can match its impact.
+    text: Heavy route, heavy answer. The bazooka holds one rocket, but one is usually
+      plenty.
   - key: Fire at the reinforced red wall ahead. Only a heavy impact can breach this
       training barrier.
     text: Fire at the reinforced red wall ahead. Only a heavy impact can breach this
       training barrier.
   - key: Rockets take time to travel. Start reloading while you continue forward.
-    text: Rockets take time to travel. Start reloading while you continue forward.
+    text: Rockets aren't instant. Fire, reload on the move, and don't wait around
+      for the fireworks.
   - key: Now use the blast for movement. Jump, look down and slightly behind you,
       then fire at the orange training plate.
     text: Now use the blast for movement. Jump, look down and slightly behind you,
       then fire at the orange training plate.
   - key: The blast pushes you away from its impact point. Hold forward in the air
       and land on the platform above.
-    text: The blast pushes you away from its impact point. Hold forward in the air
-      and land on the platform above.
+    text: The blast throws you away from the impact. Hold forward in the air and
+      stick the landing above.
   - key: A trained Corps courier can also use a bazooka to redirect in mid-air.
-    text: A trained Corps courier can also use a bazooka to redirect in mid-air.
+    text: A good courier can even change direction mid-air. A rocket helps.
   - key: Jump forward and fire at the orange plate on the left wall. Its blast will
       push you right toward the next platform.
     text: Jump forward and fire at the orange plate on the left wall. Its blast will
@@ -339,8 +337,6 @@ MonoBehaviour:
       Pass this test and your courier license will unlock real delivery assignments.
       Training recovery remains active here; outside this facility, it will not save
       you.
-    text: Recruit, this is your Space Delivery Corps licensing exam. Cross the start
-      line to begin the timer, then use everything you learned to reach the finish.
-      Pass this test and your courier license will unlock real delivery assignments.
-      Training recovery remains active here; outside this facility, it will not save
-      you.
+    text: This is it, rookie - your licensing run. Cross the line, beat the course,
+      and earn real assignments. Recovery still works here. Out there, nobody pulls
+      you back.

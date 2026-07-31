@@ -39,6 +39,9 @@ namespace RunGun.Levels
         [SerializeField] private bool applyGameTypography = true;
         [SerializeField] private Color speakerColor = new Color32(50, 190, 255, 255);
         [SerializeField] private Color dialogueColor = Color.white;
+        [SerializeField, Range(10f, 72f)] private float speakerFontSize = 30f;
+        [SerializeField, Range(8f, 48f)] private float dialogueFontSize = 24f;
+        [SerializeField, Range(1f, 24f)] private float dialogueMinimumFontSize = 16f;
         [SerializeField, Range(-5f, 10f)] private float dialogueCharacterSpacing = 0.5f;
         [SerializeField, Range(-20f, 20f)] private float dialogueLineSpacing = 2f;
 
@@ -230,6 +233,9 @@ namespace RunGun.Levels
                 speakerNameText.color = speakerColor;
                 speakerNameText.fontStyle = FontStyles.Bold | FontStyles.Italic;
                 speakerNameText.horizontalAlignment = HorizontalAlignmentOptions.Left;
+                speakerNameText.fontSize = speakerFontSize;
+                if (speakerNameText.enableAutoSizing)
+                    speakerNameText.fontSizeMax = speakerFontSize;
             }
 
             if (dialogueText != null)
@@ -239,6 +245,11 @@ namespace RunGun.Levels
                 dialogueText.horizontalAlignment = HorizontalAlignmentOptions.Left;
                 dialogueText.characterSpacing = dialogueCharacterSpacing;
                 dialogueText.lineSpacing = dialogueLineSpacing;
+                dialogueText.enableAutoSizing = true;
+                dialogueText.fontSize = dialogueFontSize;
+                dialogueText.fontSizeMax = dialogueFontSize;
+                dialogueText.fontSizeMin = Mathf.Min(
+                    dialogueMinimumFontSize, dialogueFontSize);
             }
         }
 

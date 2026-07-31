@@ -11,6 +11,7 @@ namespace RunGun.Editor
         private const string Folder = "Assets/RunGun/Resources/Localization";
         private const string EnglishPath = Folder + "/EnglishLocalization.asset";
         private const string RussianPath = Folder + "/RussianLocalization.asset";
+        private const int DialogueContentVersion = 1;
 
         static LocalizationTableSetup()
         {
@@ -35,13 +36,32 @@ namespace RunGun.Editor
                 created = true;
             }
 
-            if (!created)
+            LocalizationTable englishTable = AssetDatabase.LoadAssetAtPath<LocalizationTable>(EnglishPath);
+            LocalizationTable russianTable = AssetDatabase.LoadAssetAtPath<LocalizationTable>(RussianPath);
+            bool synchronized = SynchronizeDialogueText(
+                englishTable, GameLocalization.EnglishDialogueEntries);
+            synchronized |= SynchronizeDialogueText(
+                russianTable, GameLocalization.RussianDialogueEntries);
+
+            if (!created && !synchronized)
                 return;
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             GameLocalization.ReloadTables();
             Debug.Log($"Localization tables created in {Folder}.");
+        }
+
+        private static bool SynchronizeDialogueText(
+            LocalizationTable table,
+            IReadOnlyDictionary<string, string> dialogueEntries)
+        {
+            if (table == null ||
+                !table.ApplyTextOverrides(DialogueContentVersion, dialogueEntries))
+                return false;
+
+            EditorUtility.SetDirty(table);
+            return true;
         }
 
         private static void CreateTable(string path, GameLanguage language, bool english)
